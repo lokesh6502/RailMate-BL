@@ -1,0 +1,23 @@
+{
+  "name": "railmate",
+  "version": "1.0.0",
+  "description": "RailMate - Live Train Tracking Simulation Website for Indian Railways",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "railmate",
+    "train-tracker",
+    "indian-railways",
+    "simulation",
+    "college-project"
+  ],
+  "author": "Bhavi_LM",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

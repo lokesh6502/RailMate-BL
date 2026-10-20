@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMate | Indian Railway Train Tracking Simulation</title>
+
+    <!-- Leaflet CSS (Free & Open Source Map - No API Key Needed) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <style>
+        :root {
+            --primary: #0b1f3a;
+            --primary-light: #16325c;
+            --accent-orange: #ff7700;
+            --accent-blue: #0284c7;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --bg-light: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(11, 31, 58, 0.06);
+            --shadow-md: 0 8px 24px rgba(11, 31, 58, 0.08);
+            --shadow-lg: 0 16px 36px rgba(11, 31, 58, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Simulation Notice Banner */
+        .simulation-banner {
+            background: linear-gradient(90deg, #b45309, #d97706, #b45309);
+            color: #ffffff;
+            text-align: center;
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .simulation-badge {
+            background: #ffffff;
+            color: #92400e;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            border-bottom: 3px solid var(--accent-orange);
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: var(--accent-orange);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 10px rgba(255, 119, 0, 0.4);
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: #38bdf8;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge-sub {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #bae6fd;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-irctc {
+            background: #e11d48;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(225, 29, 72, 0.35);
+        }
+
+        .btn-irctc:hover {
+            background: #be123c;
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px 20px 48px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 15px;
+            max-width: 650px;
+            margin: 0 auto 24px;
+            line-height: 1.5;
+        }
+
+        /* Search Tabs */
+        .search-container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            text-align: left;
+        }
+
+        .tab-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #eff6ff;
+            color: var(--accent-blue);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+            color: var(--text-dark);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .search-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0 28px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: #0270a8;
+        }
+
+        .search-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Popular quick pills */
+        .quick-picks {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .quick-picks span {
+            font-weight: 600;
+        }
+
+        .pick-pill {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 4px 11px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .pick-pill:hover {
+            background: #e2e8f0;
+            color: var(--primary);
+            border-color: #94a3b8;
+        }
+
+        /* Main Content Layout */
+        main {
+            max-width: 1240px;
+            margin: 28px auto 40px;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Active Train Header Bar */
+        .train-header-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .train-main-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .train-tag {
+            background: #0b1f3a;
+            color: #38bdf8;
+            font-size: 16px;
+            font-weight: 800;
+            padding: 10px 16px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .train-title-box h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .train-title-box p {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .sim-status-chip {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* 4 Key Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .icon-station { background: #e0f2fe; color: #0284c7; }
+        .icon-next    { background: #fef3c7; color: #d97706; }
+        .icon-eta     { background: #dcfce7; color: #16a34a; }
+        .icon-delay   { background: #fee2e2; color: #dc2626; }
+
+        .metric-content small {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-content strong {
+            font-size: 18px;
+            color: var(--text-dark);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .metric-content span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* Grid: Map + Timeline */
+        .content-split {
+            display: grid;
+            grid-template-columns: 1.6fr 1.1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 980px) {
+            .content-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Map Card */
+        .map-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #map {
+            height: 480px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        /* Simulation Controls Panel */
+        .sim-controls-panel {
+            margin-top: 16px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sim-buttons-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .ctrl-btn:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .ctrl-btn.btn-play {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .ctrl-btn.btn-play:hover {
+            background: #0270a8;
+        }
+
+        .speed-btn-group {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: 8px;
+            padding: 2px;
+        }
+
+        .speed-btn {
+            border: none;
+            background: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .speed-btn.active {
+            background: white;
+            color: var(--accent-blue);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .sim-slider {
+            flex: 1;
+            accent-color: var(--accent-orange);
+            cursor: pointer;
+        }
+
+        /* Timeline Card */
+        .timeline-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            max-height: 640px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-scroll {
+            overflow-y: auto;
+            padding-right: 6px;
+            margin-top: 14px;
+            flex: 1;
+        }
+
+        .timeline-list {
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .timeline-list::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 10px;
+            bottom: 20px;
+            width: 3px;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 22px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+
+        .timeline-item.passed .timeline-dot {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .timeline-item.current .timeline-dot {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(255, 119, 0, 0.25);
+            animation: pulse-dot-orange 1.5s infinite;
+        }
+
+        @keyframes pulse-dot-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255, 119, 0, 0.5); }
+            70% { box-shadow: 0 0 0 9px rgba(255, 119, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 119, 0, 0); }
+        }
+
+        .timeline-body {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 14px;
+            transition: all 0.2s;
+        }
+
+        .timeline-item.current .timeline-body {
+            background: #fffbeb;
+            border-color: #fde68a;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+        }
+
+        .timeline-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .st-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .st-code {
+            font-size: 11px;
+            background: #e2e8f0;
+            color: #334155;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .st-dist {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .st-times {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .st-times span strong {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        /* Disclaimer & Project Notice */
+        .disclaimer-card {
+            margin-top: 24px;
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .disclaimer-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .disclaimer-text h4 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #9a3412;
+            margin-bottom: 4px;
+        }
+
+        .disclaimer-text p {
+            font-size: 13px;
+            color: #7c2d12;
+            line-height: 1.5;
+        }
+
+        /* Station Search Results Drawer / Modal */
+        .station-results-box {
+            display: none;
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .station-results-box.show {
+            display: block;
+        }
+
+        .station-trains-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .station-train-card {
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .station-train-card:hover {
+            border-color: var(--accent-blue);
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .station-train-card h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .station-train-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 32px 20px;
+            margin-top: auto;
+            border-top: 3px solid var(--accent-orange);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        footer strong {
+            color: #38bdf8;
+        }
+
+        footer .creator-highlight {
+            color: #ffaa40;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Leaflet Train Marker Styling */
+        .train-leaflet-icon {
+            background: #e11d48;
+            color: white;
+            width: 34px !important;
+            height: 34px !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.4), 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .station-leaflet-icon {
+            background: #0284c7;
+            color: white;
+            width: 22px !important;
+            height: 22px !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+
+        .station-leaflet-icon.terminal {
+            background: #0b1f3a;
+            width: 26px !important;
+            height: 26px !important;
+            font-size: 12px;
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 640px) {
+            header { padding: 14px 5%; }
+            .hero { padding: 28px 14px 36px; }
+            .hero h1 { font-size: 24px; }
+            .search-form { flex-direction: column; }
+            .search-btn { padding: 14px; justify-content: center; }
+            #map { height: 350px; }
+            .sim-buttons-row { flex-direction: column; align-items: stretch; }
+            .ctrl-group { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Simulation Notice Banner -->
+<aside class="simulation-banner" aria-label="Simulation Notice">
+    <span class="simulation-badge">DEMO DATA</span>
+    <span>SIMULATION MODE — DEMO DATA | Indian Railway Train Tracking College Project</span>
+</aside>
+
+<!-- Header -->
+<header>
+    <div class="logo-wrap">
+        <div class="logo-icon">&#128646;</div>
+        <div>
+            <div class="logo-text">Rail<span>Mate</span></div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <div class="badge-sub">YOUR TRAIN JOURNEY, SIMPLIFIED</div>
+        <!-- Preserved Official IRCTC Link -->
+        <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" class="btn-irctc" title="Official IRCTC ticket booking">
+            &#127915; Book Tickets on IRCTC
+        </a>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <h1>&#128645; Live Train Tracking Simulation</h1>
+    <p>
+        Explore real Indian Railway routes, station schedules, and a live 5-second simulated GPS marker gliding along the track.
+    </p>
+
+    <div class="search-container">
+        <div class="tab-row">
+            <button class="tab-btn active" id="tabTrain" onclick="switchSearchTab('train')">Find by Train (Name or Number)</button>
+            <button class="tab-btn" id="tabStation" onclick="switchSearchTab('station')">Find Trains by Station</button>
+        </div>
+
+        <form class="search-form" onsubmit="handleSearch(event)">
+            <div class="search-input-wrap">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Enter train number (e.g. 12951) or name (e.g. Rajdhani)"
+                    autocomplete="off"
+                >
+            </div>
+            <button type="submit" class="search-btn">
+                <span>Search</span> &#128269;
+            </button>
+        </form>
+
+        <div class="quick-picks" id="quickPicks">
+            <span>Popular Trains:</span>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('12951')">12951 Mumbai Rajdhani</button>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('22436')">22436 Vande Bharat Exp</button>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('12002')">12002 Bhopal Shatabdi</button>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('11077')">11077 Jhelum Exp (Jalgaon)</button>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('12301')">12301 Howrah Rajdhani</button>
+            <button type="button" class="pick-pill" onclick="loadTrainDirect('12626')">12626 Kerala Express</button>
+        </div>
+    </div>
+</section>
+
+<!-- Station Search Results (shown when searching by station) -->
+<main>
+    <div class="station-results-box" id="stationResultsBox">
+        <div class="card-top-bar">
+            <h3 class="card-title">&#128649; Trains Stopping at Station: <span id="stationSearchHeading" style="color:var(--accent-blue);"></span></h3>
+            <button class="ctrl-btn" onclick="closeStationResults()">&#10005; Close</button>
+        </div>
+        <div class="station-trains-grid" id="stationTrainsGrid"></div>
+    </div>
+
+    <!-- Active Train Header -->
+    <div class="train-header-card" id="trainHeaderCard">
+        <div class="train-main-info">
+            <div class="train-tag" id="dispTrainNumber">12951</div>
+            <div class="train-title-box">
+                <h2 id="dispTrainName">Mumbai Tejas Rajdhani Express</h2>
+                <p id="dispTrainRoute">Mumbai Central (MMCT) &rarr; New Delhi (NDLS)</p>
+            </div>
+        </div>
+
+        <div class="sim-status-chip">
+            <span class="pulse-dot"></span>
+            <span id="simStatusText">Simulation Active (Auto-updating every 5s)</span>
+        </div>
+    </div>
+
+    <!-- 4 Live Metric Cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon icon-station">&#128205;</div>
+            <div class="metric-content">
+                <small>Current Demo Station</small>
+                <strong id="metricCurrentStation">Mumbai Central (MMCT)</strong>
+                <span id="metricDistance">0 km covered of 1386 km</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon icon-next">&#10140;</div>
+            <div class="metric-content">
+                <small>Next Station Stop</small>
+                <strong id="metricNextStation">Borivali (BVI)</strong>
+                <span id="metricNextPlatform">Platform 6 &bull; 30 km ahead</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon icon-eta">&#9200;</div>
+            <div class="metric-content">
+                <small>Estimated Arrival</small>
+                <strong id="metricEta">17:22 hrs</strong>
+                <span id="metricSpeed">Speed: ~92 km/h</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon icon-delay">&#9888;</div>
+            <div class="metric-content">
+                <small>Simulated Delay</small>
+                <strong id="metricDelay" style="color:#d97706;">5 min delay</strong>
+                <span>Status: In Transit</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content: Map + Timeline -->
+    <div class="content-split">
+        <!-- Route Map & Controls -->
+        <div class="map-card">
+            <div class="card-top-bar">
+                <div class="card-title">&#128506;&#65039; Interactive Route Map &amp; Live Train Marker</div>
+                <div style="font-size:12px; color:var(--text-muted); font-weight:600;">
+                    Auto-refreshes every <strong id="speedLabel" style="color:var(--accent-orange);">5s</strong>
+                </div>
+            </div>
+
+            <div id="map"></div>
+
+            <!-- Simulation Controls -->
+            <div class="sim-controls-panel">
+                <div class="sim-buttons-row">
+                    <div class="ctrl-group">
+                        <button class="ctrl-btn btn-play" id="btnPlayPause" onclick="togglePlayPause()">
+                            <span id="playIcon">&#9646;&#9646;</span> <span id="playText">Pause</span>
+                        </button>
+                        <button class="ctrl-btn" onclick="resetSimulation()" title="Restart from origin">
+                            &#8634; Reset
+                        </button>
+                        <button class="ctrl-btn" onclick="stepForward()" title="Step 5 seconds ahead">
+                            &#9654;| Step Ahead
+                        </button>
+                    </div>
+
+                    <div class="ctrl-group">
+                        <span style="font-size:12px; font-weight:700; color:var(--text-muted);">SIM SPEED:</span>
+                        <div class="speed-btn-group">
+                            <button class="speed-btn active" id="spd1" onclick="setSimSpeed(1, 5000)">1x (5s)</button>
+                            <button class="speed-btn" id="spd2" onclick="setSimSpeed(2, 2500)">2x (2.5s)</button>
+                            <button class="speed-btn" id="spd4" onclick="setSimSpeed(4, 1000)">5x (1s)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-wrap">
+                    <span>Origin</span>
+                    <input
+                        type="range"
+                        id="simProgressSlider"
+                        class="sim-slider"
+                        min="0"
+                        max="100"
+                        value="0"
+                        step="0.5"
+                        oninput="onSliderScrub(this.value)"
+                    >
+                    <span>Destination (<span id="sliderPercent">0%</span>)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Station Timeline Visualizer -->
+        <div class="timeline-card">
+            <div class="card-top-bar">
+                <div class="card-title">&#128652; Station Timeline &amp; Stops</div>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:600;" id="timelineStopCount">7 Stations</span>
+            </div>
+
+            <div class="timeline-scroll">
+                <div class="timeline-list" id="timelineList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- College Project Disclaimer -->
+    <div class="disclaimer-card">
+        <div class="disclaimer-icon">&#9432;</div>
+        <div class="disclaimer-text">
+            <h4>ACADEMIC &amp; DEMONSTRATION DISCLAIMER</h4>
+            <p>
+                <strong>RailMate</strong> is a college project designed and developed by <strong>Bhavi_LM</strong> for demonstrating Indian Railway route tracking, interactive maps, and real-time state simulation.
+                All train positions, coordinates, speeds, and delays displayed on this page are <strong>simulated demonstration data</strong>. No real-time railway operations or passengers should rely on this simulation for actual travel. For real bookings and live enquiries, please use the official IRCTC portal.
+            </p>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div><strong>RailMate</strong> &mdash; Indian Railway Train Tracking Simulation</div>
+    <div style="margin: 6px 0;">
+        Designed &amp; Developed for BCA College Project by <span class="creator-highlight">Bhavi_LM</span>
+    </div>
+    <div style="font-size:11px; opacity:0.8; margin-top:8px;">
+        Powered by Leaflet.js &bull; OpenStreetMap &bull; Express.js &bull; Zero Paid APIs Required
+    </div>
+</footer>
+
+<!-- Leaflet JS (Free open-source map library) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+/**
+ * RailMate Built-in Indian Railways Simulation Dataset
+ * Creator: Bhavi_LM
+ * Fallback dataset available directly in the client so the app runs smoothly
+ * both via node server.js AND when opened directly as index.html!
+ */
+const BUILTIN_TRAINS = [
+  {
+    trainNumber: "12951",
+    trainName: "Mumbai Tejas Rajdhani Express",
+    trainType: "Tejas Rajdhani",
+    from: "Mumbai Central (MMCT)",
+    to: "New Delhi (NDLS)",
+    departureTime: "17:00",
+    arrivalTime: "08:32 (+1 day)",
+    totalDistanceKm: 1386,
+    avgSpeedKmh: 92,
+    demoDelayMinutes: 5,
+    stations: [
+      { code: "MMCT", name: "Mumbai Central", lat: 18.9696, lng: 72.8193, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:00", platform: "1", day: 1 },
+      { code: "BVI",  name: "Borivali",       lat: 19.2288, lng: 72.8569, distanceKm: 30, scheduledArrival: "17:22", scheduledDeparture: "17:24", platform: "6", day: 1 },
+      { code: "ST",   name: "Surat",          lat: 21.2052, lng: 72.8407, distanceKm: 263, scheduledArrival: "19:43", scheduledDeparture: "19:48", platform: "1", day: 1 },
+      { code: "BRC",  name: "Vadodara Jn",    lat: 22.3107, lng: 73.1812, distanceKm: 393, scheduledArrival: "21:06", scheduledDeparture: "21:16", platform: "2", day: 1 },
+      { code: "RTM",  name: "Ratlam Jn",      lat: 23.3340, lng: 75.0375, distanceKm: 653, scheduledArrival: "00:25", scheduledDeparture: "00:28", platform: "5", day: 2 },
+      { code: "KOTA", name: "Kota Jn",        lat: 25.2217, lng: 75.8754, distanceKm: 920, scheduledArrival: "03:15", scheduledDeparture: "03:20", platform: "1", day: 2 },
+      { code: "NDLS", name: "New Delhi",      lat: 28.6430, lng: 77.2197, distanceKm: 1386, scheduledArrival: "08:32", scheduledDeparture: "Destination", platform: "3", day: 2 }
+    ]
+  },
+  {
+    trainNumber: "22436",
+    trainName: "Vande Bharat Express",
+    trainType: "Vande Bharat",
+    from: "New Delhi (NDLS)",
+    to: "Varanasi Jn (BSB)",
+    departureTime: "06:00",
+    arrivalTime: "14:00",
+    totalDistanceKm: 759,
+    avgSpeedKmh: 95,
+    demoDelayMinutes: 0,
+    stations: [
+      { code: "NDLS", name: "New Delhi",      lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "16", day: 1 },
+      { code: "CNB",  name: "Kanpur Central", lat: 26.4539, lng: 80.3510, distanceKm: 440, scheduledArrival: "10:08", scheduledDeparture: "10:10", platform: "1", day: 1 },
+      { code: "PRYJ", name: "Prayagraj Jn",   lat: 25.4484, lng: 81.8335, distanceKm: 634, scheduledArrival: "12:08", scheduledDeparture: "12:10", platform: "6", day: 1 },
+      { code: "BSB",  name: "Varanasi Jn",     lat: 25.3284, lng: 82.9868, distanceKm: 759, scheduledArrival: "14:00", scheduledDeparture: "Destination", platform: "1", day: 1 }
+    ]
+  },
+  {
+    trainNumber: "12002",
+    trainName: "Bhopal Shatabdi Express",
+    trainType: "Shatabdi Express",
+    from: "New Delhi (NDLS)",
+    to: "Rani Kamalapati Bhopal (RKMP)",
+    departureTime: "06:00",
+    arrivalTime: "14:40",
+    totalDistanceKm: 708,
+    avgSpeedKmh: 83,
+    demoDelayMinutes: 12,
+    stations: [
+      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "1", day: 1 },
+      { code: "MTJ",  name: "Mathura Jn",           lat: 27.4924, lng: 77.6737, distanceKm: 141, scheduledArrival: "07:19", scheduledDeparture: "07:20", platform: "1", day: 1 },
+      { code: "AGC",  name: "Agra Cantt",           lat: 27.1592, lng: 77.9904, distanceKm: 195, scheduledArrival: "07:50", scheduledDeparture: "07:55", platform: "1", day: 1 },
+      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "09:23", scheduledDeparture: "09:28", platform: "1", day: 1 },
+      { code: "VGLJ", name: "VGL Jhansi Jn",        lat: 25.4484, lng: 78.5685, distanceKm: 410, scheduledArrival: "10:45", scheduledDeparture: "10:50", platform: "1", day: 1 },
+      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "14:07", scheduledDeparture: "14:12", platform: "1", day: 1 },
+      { code: "RKMP", name: "Rani Kamalapati",      lat: 23.2045, lng: 77.4390, distanceKm: 708, scheduledArrival: "14:40", scheduledDeparture: "Destination", platform: "5", day: 1 }
+    ]
+  },
+  {
+    trainNumber: "12301",
+    trainName: "Howrah Rajdhani Express",
+    trainType: "Rajdhani Express",
+    from: "Howrah Jn (HWH)",
+    to: "New Delhi (NDLS)",
+    departureTime: "16:50",
+    arrivalTime: "10:05 (+1 day)",
+    totalDistanceKm: 1451,
+    avgSpeedKmh: 85,
+    demoDelayMinutes: 8,
+    stations: [
+      { code: "HWH",  name: "Howrah Jn",            lat: 22.5839, lng: 88.3433, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "16:50", platform: "9", day: 1 },
+      { code: "ASN",  name: "Asansol Jn",           lat: 23.6841, lng: 86.9634, distanceKm: 200, scheduledArrival: "18:57", scheduledDeparture: "19:00", platform: "4", day: 1 },
+      { code: "DHN",  name: "Dhanbad Jn",           lat: 23.7957, lng: 86.4304, distanceKm: 259, scheduledArrival: "19:50", scheduledDeparture: "19:55", platform: "3", day: 1 },
+      { code: "GAYA", name: "Gaya Jn",              lat: 24.8016, lng: 85.0069, distanceKm: 459, scheduledArrival: "22:19", scheduledDeparture: "22:22", platform: "1", day: 1 },
+      { code: "DDU",  name: "Pt Deen Dayal Upadhyaya", lat: 25.2818, lng: 83.1197, distanceKm: 664, scheduledArrival: "00:45", scheduledDeparture: "00:55", platform: "4", day: 2 },
+      { code: "PRYJ", name: "Prayagraj Jn",         lat: 25.4484, lng: 81.8335, distanceKm: 816, scheduledArrival: "02:43", scheduledDeparture: "02:45", platform: "1", day: 2 },
+      { code: "CNB",  name: "Kanpur Central",        lat: 26.4539, lng: 80.3510, distanceKm: 1010, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "1", day: 2 },
+      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 1451, scheduledArrival: "10:05", scheduledDeparture: "Destination", platform: "4", day: 2 }
+    ]
+  },
+  {
+    trainNumber: "11077",
+    trainName: "Jhelum Express",
+    trainType: "Express",
+    from: "Pune Jn (PUNE)",
+    to: "Jammu Tawi (JAT)",
+    departureTime: "17:20",
+    arrivalTime: "09:45 (+2 days)",
+    totalDistanceKm: 2176,
+    avgSpeedKmh: 54,
+    demoDelayMinutes: 15,
+    stations: [
+      { code: "PUNE", name: "Pune Jn",              lat: 18.5289, lng: 73.8744, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:20", platform: "3", day: 1 },
+      { code: "ANG",  name: "Ahmednagar",           lat: 19.0948, lng: 74.7479, distanceKm: 155, scheduledArrival: "19:57", scheduledDeparture: "20:00", platform: "1", day: 1 },
+      { code: "MMR",  name: "Manmad Jn",            lat: 20.2520, lng: 74.4379, distanceKm: 308, scheduledArrival: "23:10", scheduledDeparture: "23:15", platform: "2", day: 1 },
+      { code: "JL",   name: "Jalgaon Jn",           lat: 21.0077, lng: 75.5626, distanceKm: 468, scheduledArrival: "01:43", scheduledDeparture: "01:45", platform: "3", day: 2 },
+      { code: "BSL",  name: "Bhusawal Jn",          lat: 21.0475, lng: 75.7953, distanceKm: 492, scheduledArrival: "02:15", scheduledDeparture: "02:20", platform: "5", day: 2 },
+      { code: "KNW",  name: "Khandwa Jn",           lat: 21.8242, lng: 76.3533, distanceKm: 616, scheduledArrival: "04:32", scheduledDeparture: "04:35", platform: "2", day: 2 },
+      { code: "ET",   name: "Itarsi Jn",            lat: 22.6139, lng: 77.7639, distanceKm: 799, scheduledArrival: "07:15", scheduledDeparture: "07:25", platform: "1", day: 2 },
+      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 891, scheduledArrival: "08:50", scheduledDeparture: "08:55", platform: "2", day: 2 },
+      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 1280, scheduledArrival: "14:40", scheduledDeparture: "14:45", platform: "1", day: 2 },
+      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 1593, scheduledArrival: "21:25", scheduledDeparture: "21:40", platform: "7", day: 2 },
+      { code: "JAT",  name: "Jammu Tawi",           lat: 32.7063, lng: 74.8797, distanceKm: 2176, scheduledArrival: "09:45", scheduledDeparture: "Destination", platform: "1", day: 3 }
+    ]
+  },
+  {
+    trainNumber: "12626",
+    trainName: "Kerala Express",
+    trainType: "Superfast",
+    from: "New Delhi (NDLS)",
+    to: "Thiruvananthapuram Central (TVC)",
+    departureTime: "20:10",
+    arrivalTime: "19:00 (+2 days)",
+    totalDistanceKm: 3036,
+    avgSpeedKmh: 65,
+    demoDelayMinutes: 20,
+    stations: [
+      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "20:10", platform: "2", day: 1 },
+      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "00:03", scheduledDeparture: "00:05", platform: "1", day: 2 },
+      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "05:20", scheduledDeparture: "05:25", platform: "1", day: 2 },
+      { code: "NGP",  name: "Nagpur Jn",            lat: 21.1524, lng: 79.0888, distanceKm: 1092, scheduledArrival: "11:45", scheduledDeparture: "11:50", platform: "2", day: 2 },
+      { code: "BZA",  name: "Vijayawada Jn",        lat: 16.5173, lng: 80.6206, distanceKm: 1754, scheduledArrival: "21:40", scheduledDeparture: "21:50", platform: "1", day: 2 },
+      { code: "KPD",  name: "Katpadi Jn",           lat: 12.9702, lng: 79.1384, distanceKm: 2200, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "3", day: 3 },
+      { code: "CBE",  name: "Coimbatore Jn",        lat: 11.0016, lng: 76.9628, distanceKm: 2570, scheduledArrival: "10:25", scheduledDeparture: "10:30", platform: "1", day: 3 },
+      { code: "ERS",  name: "Ernakulam Jn",         lat: 9.9678,  lng: 76.2925, distanceKm: 2831, scheduledArrival: "15:20", scheduledDeparture: "15:25", platform: "1", day: 3 },
+      { code: "TVC",  name: "Thiruvananthapuram",   lat: 8.4875,  lng: 76.9525, distanceKm: 3036, scheduledArrival: "19:00", scheduledDeparture: "Destination", platform: "2", day: 3 }
+    ]
+  }
+];
+
+// Global State
+let currentTrain = BUILTIN_TRAINS[0];
+let simProgress = 15; // Starting progress % along the route
+let isPlaying = true;
+let simIntervalMs = 5000; // Default 5 seconds
+let simTimer = null;
+let currentSearchTab = 'train'; // 'train' or 'station'
+
+// Leaflet Map Objects
+let map = null;
+let trainMarker = null;
+let stationMarkers = [];
+let routePolyline = null;
+
+// Initialize on DOM load
+document.addEventListener("DOMContentLoaded", function() {
+    initLeafletMap();
+    loadTrain(currentTrain);
+    startSimTimer();
+});
+
+// Setup Leaflet Map
+function initLeafletMap() {
+    // Center initially on central India
+    map = L.map('map', {
+        zoomControl: true,
+        scrollWheelZoom: true
+    }).setView([22.5, 76.5], 6);
+
+    // Free OpenStreetMap Tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+}
+
+// Load a specific train into the UI and Map
+function loadTrain(train) {
+    currentTrain = train;
+    simProgress = 12; // Start near first segment
+
+    // Update Header
+    document.getElementById("dispTrainNumber").textContent = train.trainNumber;
+    document.getElementById("dispTrainName").textContent = train.trainName;
+    document.getElementById("dispTrainRoute").textContent = `${train.from} → ${train.to}`;
+    document.getElementById("timelineStopCount").textContent = `${train.stations.length} Stations`;
+
+    // Redraw Map Route
+    drawMapRoute(train);
+
+    // Build Timeline
+    renderTimeline(train);
+
+    // Update Simulation Status
+    updateSimState();
+
+    // Scroll smoothly to train header if user just searched
+    document.getElementById("trainHeaderCard").scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Draw polyline and station markers
+function drawMapRoute(train) {
+    // Clear existing layers
+    if (routePolyline) map.removeLayer(routePolyline);
+    stationMarkers.forEach(m => map.removeLayer(m));
+    stationMarkers = [];
+
+    const latLngs = train.stations.map(st => [st.lat, st.lng]);
+
+    // Draw route track
+    routePolyline = L.polyline(latLngs, {
+        color: '#0284c7',
+        weight: 5,
+        opacity: 0.85,
+        dashArray: '8, 8',
+        lineCap: 'round'
+    }).addTo(map);
+
+    // Add Station Markers
+    train.stations.forEach((st, idx) => {
+        const isTerminal = (idx === 0 || idx === train.stations.length - 1);
+        const iconHtml = `<div class="station-leaflet-icon ${isTerminal ? 'terminal' : ''}">${isTerminal ? '★' : (idx + 1)}</div>`;
+
+        const customIcon = L.divIcon({
+            html: iconHtml,
+            className: 'custom-station-icon',
+            iconSize: isTerminal ? [26, 26] : [22, 22],
+            iconAnchor: isTerminal ? [13, 13] : [11, 11]
+        });
+
+        const marker = L.marker([st.lat, st.lng], { icon: customIcon }).addTo(map);
+        marker.bindPopup(`
+            <div style="font-family:sans-serif; min-width:140px;">
+                <strong style="color:#0b1f3a; font-size:14px;">${st.name} (${st.code})</strong><br>
+                <small style="color:#64748b;">Stop #${idx + 1} &bull; ${st.distanceKm} km</small><br>
+                <div style="margin-top:6px; font-size:12px;">
+                    Arr: <b>${st.scheduledArrival}</b> | Dep: <b>${st.scheduledDeparture}</b><br>
+                    Platform: <b>${st.platform}</b>
+                </div>
+            </div>
+        `);
+        stationMarkers.push(marker);
+    });
+
+    // Create or move Animated Train Marker
+    if (!trainMarker) {
+        const trainIcon = L.divIcon({
+            html: '<div class="train-leaflet-icon">🚆</div>',
+            className: 'custom-train-marker',
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+        trainMarker = L.marker(latLngs[0], { icon: trainIcon, zIndexOffset: 1000 }).addTo(map);
+        trainMarker.bindPopup(`<b>${train.trainNumber} - ${train.trainName}</b><br><span style="color:#d97706;">Demo GPS Location</span>`);
+    }
+
+    // Fit map bounds to encompass route
+    map.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+}
+
+// Calculate interpolated position along route stations based on progress % (0 to 100)
+function calculatePosition(progress) {
+    const stations = currentTrain.stations;
+    const totalSegments = stations.length - 1;
+
+    const fraction = (progress / 100) * totalSegments;
+    const currentIdx = Math.min(Math.floor(fraction), totalSegments - 1);
+    const nextIdx = Math.min(currentIdx + 1, stations.length - 1);
+    const subFraction = fraction - currentIdx;
+
+    const curSt = stations[currentIdx];
+    const nxtSt = stations[nextIdx];
+
+    // Linear interpolation
+    const lat = curSt.lat + (nxtSt.lat - curSt.lat) * subFraction;
+    const lng = curSt.lng + (nxtSt.lng - curSt.lng) * subFraction;
+    const coveredKm = Math.round(curSt.distanceKm + (nxtSt.distanceKm - curSt.distanceKm) * subFraction);
+
+    return {
+        lat,
+        lng,
+        currentIdx,
+        nextIdx,
+        currentStation: curSt,
+        nextStation: nxtSt,
+        coveredKm
+    };
+}
+
+// Update simulation UI, markers, and metrics
+function updateSimState() {
+    const state = calculatePosition(simProgress);
+
+    // Update slider UI
+    document.getElementById("simProgressSlider").value = simProgress;
+    document.getElementById("sliderPercent").textContent = `${Math.round(simProgress)}%`;
+
+    // Update Leaflet marker position smoothly
+    if (trainMarker) {
+        trainMarker.setLatLng([state.lat, state.lng]);
+        trainMarker.setPopupContent(`
+            <div style="font-family:sans-serif; min-width:170px;">
+                <b style="color:#0b1f3a;">${currentTrain.trainNumber} - ${currentTrain.trainName}</b><br>
+                <span style="color:#d97706; font-size:12px; font-weight:700;">SIMULATED LIVE POSITION</span><br>
+                <small style="color:#64748b;">Near: ${state.currentStation.name}</small><br>
+                <small style="color:#64748b;">Next: ${state.nextStation.name}</small>
+            </div>
+        `);
+    }
+
+    // Update 4 Metric Cards
+    document.getElementById("metricCurrentStation").textContent = `${state.currentStation.name} (${state.currentStation.code})`;
+    document.getElementById("metricDistance").textContent = `${state.coveredKm} km covered of ${currentTrain.totalDistanceKm} km`;
+
+    document.getElementById("metricNextStation").textContent = `${state.nextStation.name} (${state.nextStation.code})`;
+    document.getElementById("metricNextPlatform").textContent = `Platform ${state.nextStation.platform} • ${Math.max(0, state.nextStation.distanceKm - state.coveredKm)} km ahead`;
+
+    document.getElementById("metricEta").textContent = `${state.nextStation.scheduledArrival} hrs`;
+    const speed = simProgress >= 100 ? 0 : Math.round(currentTrain.avgSpeedKmh + Math.sin(simProgress) * 7);
+    document.getElementById("metricSpeed").textContent = `Speed: ~${speed} km/h`;
+
+    const delayText = currentTrain.demoDelayMinutes === 0 ? "On Time" : `${currentTrain.demoDelayMinutes} min delay`;
+    const delayEl = document.getElementById("metricDelay");
+    delayEl.textContent = delayText;
+    delayEl.style.color = currentTrain.demoDelayMinutes === 0 ? "var(--accent-green)" : "#d97706";
+
+    // Update Timeline highlighting
+    updateTimelineClasses(state.currentIdx);
+}
+
+// Render Station Timeline HTML
+function renderTimeline(train) {
+    const listEl = document.getElementById("timelineList");
+    listEl.innerHTML = "";
+
+    train.stations.forEach((st, idx) => {
+        const item = document.createElement("div");
+        item.className = "timeline-item";
+        item.id = `timeline-st-${idx}`;
+
+        item.innerHTML = `
+            <div class="timeline-dot">${idx + 1}</div>
+            <div class="timeline-body">
+                <div class="timeline-title">
+                    <div>
+                        <span class="st-name">${st.name}</span>
+                        <span class="st-code">${st.code}</span>
+                    </div>
+                    <span class="st-dist">${st.distanceKm} km</span>
+                </div>
+                <div class="st-times">
+                    <span>Arr: <strong>${st.scheduledArrival}</strong></span>
+                    <span>Dep: <strong>${st.scheduledDeparture}</strong></span>
+                    <span>Platform: <strong>${st.platform}</strong></span>
+                </div>
+            </div>
+        `;
+
+        // Clicking a timeline stop scrubs the train directly there
+        item.style.cursor = "pointer";
+        item.onclick = () => {
+            const pct = (idx / (train.stations.length - 1)) * 100;
+            simProgress = pct;
+            updateSimState();
+        };
+
+        listEl.appendChild(item);
+    });
+}
+
+// Update Passed / Current / Upcoming styling in Timeline
+function updateTimelineClasses(currentIdx) {
+    currentTrain.stations.forEach((_, idx) => {
+        const el = document.getElementById(`timeline-st-${idx}`);
+        if (!el) return;
+
+        el.classList.remove("passed", "current");
+        if (idx < currentIdx) {
+            el.classList.add("passed");
+        } else if (idx === currentIdx) {
+            el.classList.add("current");
+        }
+    });
+}
+
+// Timer Engine (Runs every 5 seconds by default)
+function startSimTimer() {
+    stopSimTimer();
+    simTimer = setInterval(() => {
+        if (!isPlaying) return;
+
+        // Advance progress by ~2% every step
+        simProgress += 1.8;
+        if (simProgress >= 100) {
+            simProgress = 100;
+            isPlaying = false;
+            updatePlayButtonUI();
+        }
+        updateSimState();
+    }, simIntervalMs);
+}
+
+function stopSimTimer() {
+    if (simTimer) {
+        clearInterval(simTimer);
+        simTimer = null;
+    }
+}
+
+// Play / Pause Toggle
+function togglePlayPause() {
+    isPlaying = !isPlaying;
+    if (isPlaying && simProgress >= 100) {
+        simProgress = 0; // Restart if at destination
+    }
+    updatePlayButtonUI();
+}
+
+function updatePlayButtonUI() {
+    const playIcon = document.getElementById("playIcon");
+    const playText = document.getElementById("playText");
+    const statusText = document.getElementById("simStatusText");
+
+    if (isPlaying) {
+        playIcon.innerHTML = "&#9646;&#9646;";
+        playText.textContent = "Pause";
+        statusText.textContent = `Simulation Active (Auto-updating every ${simIntervalMs / 1000}s)`;
+    } else {
+        playIcon.innerHTML = "&#9654;";
+        playText.textContent = "Resume";
+        statusText.textContent = "Simulation Paused";
+    }
+}
+
+// Reset simulation to 0%
+function resetSimulation() {
+    simProgress = 0;
+    isPlaying = true;
+    updatePlayButtonUI();
+    updateSimState();
+}
+
+// Step ahead by 5%
+function stepForward() {
+    simProgress = Math.min(100, simProgress + 5);
+    updateSimState();
+}
+
+// Scrub via slider
+function onSliderScrub(val) {
+    simProgress = parseFloat(val);
+    updateSimState();
+}
+
+// Simulation speed adjustment
+function setSimSpeed(mult, intervalMs) {
+    simIntervalMs = intervalMs;
+    ['spd1', 'spd2', 'spd4'].forEach(id => document.getElementById(id).classList.remove('active'));
+
+    if (mult === 1) document.getElementById('spd1').classList.add('active');
+    if (mult === 2) document.getElementById('spd2').classList.add('active');
+    if (mult === 4) document.getElementById('spd4').classList.add('active');
+
+    document.getElementById("speedLabel").textContent = `${intervalMs / 1000}s`;
+    startSimTimer();
+    updatePlayButtonUI();
+}
+
+// Switch between "Train" and "Station" tabs
+function switchSearchTab(tab) {
+    currentSearchTab = tab;
+    const tabTrain = document.getElementById("tabTrain");
+    const tabStation = document.getElementById("tabStation");
+    const input = document.getElementById("searchInput");
+
+    if (tab === 'train') {
+        tabTrain.classList.add("active");
+        tabStation.classList.remove("active");
+        input.placeholder = "Enter train number (e.g. 12951) or name (e.g. Rajdhani)";
+    } else {
+        tabStation.classList.add("active");
+        tabTrain.classList.remove("active");
+        input.placeholder = "Enter station name (e.g. Jalgaon, New Delhi, Bhopal) or code (e.g. JL, NDLS)";
+    }
+}
+
+// Quick pick pill click
+function loadTrainDirect(trainNo) {
+    const match = BUILTIN_TRAINS.find(t => t.trainNumber === trainNo);
+    if (match) {
+        loadTrain(match);
+        closeStationResults();
+    }
+}
+
+// Form Search handler
+async function handleSearch(event) {
+    event.preventDefault();
+    const query = document.getElementById("searchInput").value.trim();
+    if (!query) {
+        alert("Please enter a train name, number, or station to search.");
+        return;
+    }
+
+    if (currentSearchTab === 'train') {
+        searchTrainAction(query);
+    } else {
+        searchStationAction(query);
+    }
+}
+
+// Search Train logic (Try backend API, fallback to client dataset)
+async function searchTrainAction(query) {
+    const q = query.toLowerCase();
+
+    // First try backend API if server.js is running
+    try {
+        const response = await fetch(`/api/train/${encodeURIComponent(query)}`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data) {
+                loadTrain(data.data);
+                closeStationResults();
+                return;
+            }
+        }
+    } catch (err) {
+        // Fallback to local dataset seamlessly
+    }
+
+    // Client-side search match
+    const match = BUILTIN_TRAINS.find(t =>
+        t.trainNumber === q ||
+        t.trainName.toLowerCase().includes(q) ||
+        t.trainNumber.includes(q)
+    );
+
+    if (match) {
+        loadTrain(match);
+        closeStationResults();
+    } else {
+        alert(`No simulation train found matching "${query}".\n\nTry searching for:\n• 12951 (Mumbai Rajdhani)\n• 22436 (Vande Bharat)\n• 12002 (Bhopal Shatabdi)\n• 11077 (Jhelum Express - Jalgaon)\n• 12301 (Howrah Rajdhani)\n• 12626 (Kerala Express)`);
+    }
+}
+
+// Search Station logic
+async function searchStationAction(query) {
+    const q = query.toLowerCase();
+    let results = [];
+
+    // First try backend API if running
+    try {
+        const response = await fetch(`/api/station/${encodeURIComponent(query)}`);
+        if (response.ok) {
+            const json = await response.json();
+            if (json.success && json.data) {
+                results = json.data;
+            }
+        }
+    } catch (err) {
+        // Fallback to local dataset
+    }
+
+    if (!results || results.length === 0) {
+        // Filter from client dataset
+        results = BUILTIN_TRAINS.filter(t =>
+            t.stations.some(st =>
+                st.code.toLowerCase() === q ||
+                st.name.toLowerCase().includes(q)
+            )
+        );
+    }
+
+    if (results.length === 0) {
+        alert(`No demo trains found stopping at station "${query}".\n\nTry searching:\n• Jalgaon (JL)\n• New Delhi (NDLS)\n• Mumbai Central (MMCT)\n• Bhopal (BPL)\n• Kanpur (CNB)\n• Surat (ST)\n• Pune (PUNE)`);
+        return;
+    }
+
+    // Display station results drawer
+    const box = document.getElementById("stationResultsBox");
+    const heading = document.getElementById("stationSearchHeading");
+    const grid = document.getElementById("stationTrainsGrid");
+
+    heading.textContent = `"${query.toUpperCase()}" (${results.length} train${results.length > 1 ? 's' : ''} found)`;
+    grid.innerHTML = "";
+
+    results.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "station-train-card";
+        card.innerHTML = `
+            <h4>🚆 ${t.trainNumber} - ${t.trainName}</h4>
+            <p>${t.from} &rarr; ${t.to}</p>
+            <div style="margin-top:8px; font-size:12px; font-weight:700; color:var(--accent-blue);">
+                Click to Track This Train &rarr;
+            </div>
+        `;
+        card.onclick = () => {
+            loadTrainDirect(t.trainNumber);
+        };
+        grid.appendChild(card);
+    });
+
+    box.classList.add("show");
+    box.scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeStationResults() {
+    const box = document.getElementById("stationResultsBox");
+    box.classList.remove("show");
+}
+</script>
+
+</body>
+</html>

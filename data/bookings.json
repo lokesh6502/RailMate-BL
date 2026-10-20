@@ -1,0 +1,69 @@
+[
+  {
+    "pnr": "802-4326976",
+    "bookingId": "RM-696649",
+    "status": "CANCELLED",
+    "isDemo": true,
+    "demoNotice": "DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.",
+    "createdAt": "2026-10-20T10:38:16.649Z",
+    "train": {
+      "number": "12951",
+      "name": "Mumbai Tejas Rajdhani Express",
+      "type": "Tejas Rajdhani"
+    },
+    "journey": {
+      "fromStation": "Mumbai Central",
+      "fromCode": "MMCT",
+      "toStation": "New Delhi",
+      "toCode": "NDLS",
+      "departureTime": "17:00",
+      "arrivalTime": "08:32",
+      "journeyDate": "2026-10-25",
+      "distanceKm": 1386
+    },
+    "travelClass": {
+      "code": "3A",
+      "name": "AC 3 Tier (3A)"
+    },
+    "passengers": [
+      {
+        "name": "Bhavi Sharma",
+        "age": 21,
+        "gender": "Male",
+        "berthPreference": "Lower Berth",
+        "coach": "B1",
+        "seatNo": 19,
+        "berth": "Lower Berth",
+        "seatString": "B1 / Seat 19 (Lower Berth)",
+        "bookingStatus": "CNF"
+      },
+      {
+        "name": "Rahul Verma",
+        "age": 22,
+        "gender": "Male",
+        "berthPreference": "Middle Berth",
+        "coach": "B1",
+        "seatNo": 20,
+        "berth": "Middle Berth",
+        "seatString": "B1 / Seat 20 (Middle Berth)",
+        "bookingStatus": "CNF"
+      }
+    ],
+    "fareSummary": {
+      "passengerCount": 2,
+      "farePerPassenger": 1806,
+      "baseFareTotal": 3270,
+      "reservationFeeTotal": 80,
+      "superfastChargeTotal": 90,
+      "gstTotal": 172,
+      "totalAmount": 3612
+    },
+    "contact": {
+      "mobile": "9876543210",
+      "email": "bhavi@college.edu"
+    },
+    "cancelledAt": "2026-10-20T10:38:16.659Z",
+    "cancellationFee": 542,
+    "demoRefundAmount": 3070
+  }
+]
