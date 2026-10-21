@@ -1620,6 +1620,13 @@
 </head>
 
 <body>
+    <div id="railmate-language-box" style="position:fixed;top:10px;right:10px;z-index:99999;background:white;padding:8px;border-radius:8px;">
+    <select id="railmate-language">
+        <option value="en">English</option>
+        <option value="mr">मराठी</option>
+        <option value="hi">हिंदी</option>
+    </select>
+</div>
 
     <!-- Simulation Notice Banner -->
     <aside class="simulation-banner" aria-label="Simulation Notice">
@@ -3516,7 +3523,70 @@ All train positions, coordinates, speeds, and delays displayed on this page are
             }
         }
     </script>
+<script>
+(function () {
+    const selector = document.getElementById("railmate-language");
 
+    if (!selector) return;
+
+    const translations = {
+        mr: {
+            "Home": "मुख्यपृष्ठ",
+            "Search": "शोधा",
+            "Search Train": "ट्रेन शोधा",
+            "Live Train Tracking": "थेट ट्रेन ट्रॅकिंग",
+            "Booking": "बुकिंग",
+            "Login": "लॉगिन",
+            "Register": "नोंदणी"
+        },
+        hi: {
+            "Home": "होम",
+            "Search": "खोजें",
+            "Search Train": "ट्रेन खोजें",
+            "Live Train Tracking": "लाइव ट्रेन ट्रैकिंग",
+            "Booking": "बुकिंग",
+            "Login": "लॉगिन",
+            "Register": "पंजीकरण"
+        }
+    };
+
+    const originalTexts = new Map();
+
+    function saveOriginalText(element) {
+        if (!originalTexts.has(element)) {
+            originalTexts.set(element, element.textContent);
+        }
+    }
+
+    function changeLanguage(language) {
+        document.querySelectorAll(
+            "h1, h2, h3, h4, p, a, button, label, span"
+        ).forEach(function (element) {
+            if (element.closest("#railmate-language-box")) return;
+
+            saveOriginalText(element);
+
+            const original = originalTexts.get(element).trim();
+
+            if (language === "en") {
+                element.textContent = originalTexts.get(element);
+            } else if (translations[language] && translations[language][original]) {
+                element.textContent = translations[language][original];
+            }
+        });
+
+        localStorage.setItem("railmateLanguage", language);
+    }
+
+    selector.addEventListener("change", function () {
+        changeLanguage(selector.value);
+    });
+
+    const savedLanguage = localStorage.getItem("railmateLanguage") || "en";
+    selector.value = savedLanguage;
+    changeLanguage(savedLanguage);
+})();
+</script>
 </body>
 
 </html>
