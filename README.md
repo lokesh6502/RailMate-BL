@@ -1,7 +1,7 @@
 # RailMate — Live Train Tracking & Demo Ticket Booking Simulation
 
 **A Professional Indian Railway Train Tracking & Ticket Reservation Simulation**  
-Created by: **Bhavi_LM**  
+Created by: **RailMate**  
 Course: **BCA College Project**  
 Mode: **SIMULATION MODE — DEMO DATA (Academic & Demonstration Purposes Only)**
 
@@ -11,7 +11,7 @@ Mode: **SIMULATION MODE — DEMO DATA (Academic & Demonstration Purposes Only)**
 
 RailMate is a responsive web application designed for BCA college presentation that integrates both **Real-Time Train Simulation Tracking** and an **Indian Railway-Style Demo Ticket Booking Portal** without requiring any paid APIs, API keys, or external redirection.
 
-### 1. 🚆 Live Train Tracking & Simulation
+### 1. 🚆 RailMate
 * **Free Leaflet.js & OpenStreetMap**: Renders full railway track polylines, station stops with scheduled arrival/departures, and an animated train marker (🚆).
 * **5-Second Simulation Engine**: Automatically glides along the route every 5 seconds, updating current location, next stop, ETA, distance covered, and simulated delay.
 * **Dual Search**: Search trains by 5-digit number or name (e.g. *12951*, *22436*, *12002*, *11077*, *12301*, *12626*), or search by station (e.g. *Jalgaon*, *New Delhi*, *Mumbai*, *Bhopal*, *Kanpur*).
@@ -70,7 +70,7 @@ You will see:
 ```text
 =================================================
   RailMate — Live Tracking & Demo Ticket Booking
-  Creator: Bhavi_LM
+  Creator: RailMate
   Mode: SIMULATION MODE (No Paid API Required)
   Server running at: http://localhost:3000
 =================================================
@@ -107,4 +107,4 @@ Railmate/
 
 ## 🎓 Academic Disclaimer
 
-RailMate was created by **Bhavi_LM** as an educational college project to simulate railway tracking and reservation workflows. All train locations, fares, seat availability, and PNR allocations are simulated and intended strictly for academic demonstration.
+RailMate was created by RailMate as an educational college project to simulate railway tracking and reservation workflows. All train locations, fares, seat availability, and PNR allocations are simulated and intended strictly for academic demonstration.

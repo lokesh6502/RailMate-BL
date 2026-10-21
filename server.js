@@ -1,5 +1,5 @@
 // RailMate - Indian Railway Simulation & Demo Ticket Booking Server
-// Creator: Bhavi_LM
+// Creator: RailMate
 // Academic & College Project Demo — SIMULATION MODE
 
 const express = require("express");
@@ -489,7 +489,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log("=================================================");
   console.log("  RailMate — Live Tracking & Demo Ticket Booking");
-  console.log("  Creator: Bhavi_LM");
+  console.log("  Creator: RailMate");
   console.log("  Mode: SIMULATION MODE (No Paid API Required)");
   console.log(`  Server running at: http://localhost:${PORT}`);
   console.log("=================================================");

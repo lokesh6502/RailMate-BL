@@ -1,5 +1,5 @@
 // RailMate - Indian Railway Simulation Server
-// Creator: Bhavi_LM
+// Creator: RailMate
 // Academic & College Project Demo — SIMULATION MODE
 
 const express = require("express");
@@ -154,8 +154,8 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   console.log("=================================================");
-  console.log("  RailMate — Live Train Tracking Simulation");
-  console.log("  Creator: Bhavi_LM");
+  console.log("  RailMate — Live Traing Trackin Simulation");
+  console.log("  Creator: RailMate");
   console.log("  Mode: SIMULATION MODE (No Paid API Required)");
   console.log(`  Server running at: http://localhost:${PORT}`);
   console.log("=================================================");

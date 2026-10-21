@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RailMate | Indian Railway Train Tracking &amp; Demo Ticket Booking</title>
 
     <!-- Leaflet CSS (Free Open Source Map - No API Key Needed) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Preload Hero Train Image for Fast, Instant Loading -->
+    <link rel="preload" as="image" href="images/hero-train.jpg">
 
     <style>
         :root {
@@ -54,7 +59,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
         .simulation-badge {
@@ -166,42 +171,175 @@
             display: block;
         }
 
-        /* Hero Section */
+        /* Hero Section with Large Indian Railways Photograph */
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 34px 20px 42px;
-            text-align: center;
             position: relative;
+            background:
+                linear-gradient(180deg, rgba(7, 21, 41, 0.82) 0%, rgba(11, 31, 58, 0.70) 45%, rgba(11, 31, 58, 0.94) 100%),
+                url('images/hero-train.jpg'),
+                url('https://upload.wikimedia.org/wikipedia/commons/5/5a/Vande_Bharat_Express_around_Mumbai.jpg');
+            background-size: cover;
+            background-position: center 36%;
+            background-repeat: no-repeat;
+            color: white;
+            padding: 52px 20px 62px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-orange);
+            box-shadow: inset 0 -35px 45px -15px rgba(11, 31, 58, 0.85);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.15) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .hero-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(11, 31, 58, 0.78);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #bae6fd;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+
+        .hero-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+            animation: hero-pulse 2s infinite;
+        }
+
+        @keyframes hero-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+            }
         }
 
         .hero h1 {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-size: 38px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero h1 span.gradient-title {
+            background: linear-gradient(90deg, #ffffff 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            color: #cbd5e1;
-            font-size: 15px;
-            max-width: 650px;
-            margin: 0 auto 20px;
-            line-height: 1.5;
+            color: #e2e8f0;
+            font-size: 16px;
+            max-width: 720px;
+            margin: 0 auto 28px;
+            line-height: 1.6;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            font-weight: 400;
         }
 
         /* Search Container */
         .search-container {
-            max-width: 820px;
+            max-width: 860px;
             margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 20px 45px rgba(3, 15, 33, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.6);
             text-align: left;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Hero Highlights Bar */
+        .hero-trust-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 26px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .hero-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(11, 31, 58, 0.65);
+            padding: 7px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .hero-trust-item:hover {
+            transform: translateY(-2px);
+            background: rgba(11, 31, 58, 0.85);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .hero-trust-item span.icon {
+            font-size: 16px;
+        }
+
+        /* Photo Credit Attribution Badge */
+        .hero-photo-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 18px;
+            background: rgba(7, 21, 41, 0.75);
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            z-index: 3;
+            pointer-events: none;
         }
 
         .tab-row {
@@ -386,9 +524,17 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
         }
 
         /* 4 Key Metric Cards */
@@ -427,10 +573,25 @@
             flex-shrink: 0;
         }
 
-        .icon-station { background: #e0f2fe; color: #0284c7; }
-        .icon-next    { background: #fef3c7; color: #d97706; }
-        .icon-eta     { background: #dcfce7; color: #16a34a; }
-        .icon-delay   { background: #fee2e2; color: #dc2626; }
+        .icon-station {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .icon-next {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .icon-eta {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .icon-delay {
+            background: #fee2e2;
+            color: #dc2626;
+        }
 
         .metric-content small {
             display: block;
@@ -584,7 +745,7 @@
         .speed-btn.active {
             background: white;
             color: var(--accent-blue);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .slider-wrap {
@@ -680,9 +841,17 @@
         }
 
         @keyframes pulse-dot-orange {
-            0% { box-shadow: 0 0 0 0 rgba(255, 119, 0, 0.5); }
-            70% { box-shadow: 0 0 0 9px rgba(255, 119, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 119, 0, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 119, 0, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 9px rgba(255, 119, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 119, 0, 0);
+            }
         }
 
         .timeline-body {
@@ -826,10 +995,17 @@
         /* BOOKING SYSTEM STYLES                             */
         /* ================================================= */
         .booking-hero {
-            background: linear-gradient(135deg, #0b1f3a 0%, #1e3a8a 100%);
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(11, 31, 58, 0.88) 0%, rgba(30, 58, 138, 0.82) 100%),
+                url('images/hero-train.jpg'),
+                url('https://upload.wikimedia.org/wikipedia/commons/5/5a/Vande_Bharat_Express_around_Mumbai.jpg');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 34px 20px 40px;
+            padding: 40px 20px 48px;
             text-align: center;
+            border-bottom: 2px solid var(--accent-orange);
         }
 
         .booking-hero h1 {
@@ -1265,7 +1441,8 @@
             font-size: 13px;
         }
 
-        .ticket-table th, .ticket-table td {
+        .ticket-table th,
+        .ticket-table td {
             border: 1px solid var(--border-color);
             padding: 8px 12px;
             text-align: left;
@@ -1316,7 +1493,7 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.4), 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
             border: 2px solid white;
             transition: transform 0.3s ease;
         }
@@ -1333,7 +1510,7 @@
             font-size: 10px;
             font-weight: 800;
             border: 2px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
 
         .station-leaflet-icon.terminal {
@@ -1366,14 +1543,66 @@
             letter-spacing: 0.5px;
         }
 
+        /* Responsive Media Queries for Hero & Search */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 38px 14px 46px;
+                background-position: center center;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+                gap: 8px;
+            }
+
+            .hero p {
+                font-size: 14px;
+                margin-bottom: 20px;
+                padding: 0 4px;
+            }
+
+            .search-container {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            .search-form {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-btn {
+                padding: 13px;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .hero-trust-bar {
+                gap: 8px;
+                margin-top: 18px;
+            }
+
+            .hero-trust-item {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+
+            .hero-photo-badge {
+                display: none;
+            }
+        }
+
         /* Print-specific stylesheet */
         @media print {
             body * {
                 visibility: hidden;
             }
-            #printableTicketModal, #printableTicketModal * {
+
+            #printableTicketModal,
+            #printableTicketModal * {
                 visibility: visible;
             }
+
             #printableTicketModal {
                 position: absolute;
                 left: 0;
@@ -1382,792 +1611,865 @@
                 background: white;
                 display: block !important;
             }
+
             .no-print {
                 display: none !important;
             }
         }
     </style>
 </head>
+
 <body>
 
-<!-- Simulation Notice Banner -->
-<aside class="simulation-banner" aria-label="Simulation Notice">
-    <span class="simulation-badge">DEMO MODE</span>
-    <span>DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.</span>
-</aside>
+    <!-- Simulation Notice Banner -->
+    <aside class="simulation-banner" aria-label="Simulation Notice">
+        <span class="simulation-badge">DEMO MODE</span>
+        <span>DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.</span>
+    </aside>
 
-<!-- Header -->
-<header>
-    <div class="logo-wrap" onclick="switchMainTab('tracking')">
-        <div class="logo-icon">&#128646;</div>
-        <div>
-            <div class="logo-text">Rail<span>Mate</span></div>
-        </div>
-    </div>
-
-    <!-- Navigation Tabs inside RailMate -->
-    <nav class="nav-tabs">
-        <button class="nav-btn active" id="navBtnTracking" onclick="switchMainTab('tracking')">
-            <span>&#128645; Live Train Tracking</span>
-        </button>
-        <button class="nav-btn" id="navBtnBooking" onclick="switchMainTab('booking')">
-            <span>&#127915; Book Demo Tickets</span>
-        </button>
-        <button class="nav-btn" id="navBtnMyBookings" onclick="switchMainTab('my-bookings')">
-            <span>&#128203; My Bookings</span>
-            <span class="nav-badge-count" id="myBookingsBadge">0</span>
-        </button>
-    </nav>
-</header>
-
-<!-- ========================================================= -->
-<!-- VIEW 1: LIVE TRAIN TRACKING & SIMULATION                  -->
-<!-- ========================================================= -->
-<section id="viewTracking" class="app-view active-view">
-    <div class="hero">
-        <h1>&#128645; Live Train Tracking Simulation</h1>
-        <p>
-            Explore real Indian Railway routes, station schedules, and a live 5-second simulated GPS marker gliding along the track.
-        </p>
-
-        <div class="search-container">
-            <div class="tab-row">
-                <button class="tab-btn active" id="tabTrain" onclick="switchSearchTab('train')">Find by Train (Name or Number)</button>
-                <button class="tab-btn" id="tabStation" onclick="switchSearchTab('station')">Find Trains by Station</button>
-            </div>
-
-            <form class="search-form" onsubmit="handleTrainTrackingSearch(event)">
-                <div class="search-input-wrap">
-                    <input
-                        type="text"
-                        id="trackingSearchInput"
-                        class="search-input"
-                        placeholder="Enter train number (e.g. 12951) or name (e.g. Rajdhani)"
-                        autocomplete="off"
-                    >
-                </div>
-                <button type="submit" class="search-btn">
-                    <span>Search</span> &#128269;
-                </button>
-            </form>
-
-            <div class="quick-picks">
-                <span>Popular Trains:</span>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('12951')">12951 Mumbai Rajdhani</button>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('22436')">22436 Vande Bharat Exp</button>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('12002')">12002 Bhopal Shatabdi</button>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('11077')">11077 Jhelum Exp (Jalgaon)</button>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('12301')">12301 Howrah Rajdhani</button>
-                <button type="button" class="pick-pill" onclick="loadTrainDirect('12626')">12626 Kerala Express</button>
-            </div>
-        </div>
-    </div>
-
-    <main>
-        <!-- Station Search Results Drawer -->
-        <div class="station-results-box" id="stationResultsBox">
-            <div class="card-top-bar">
-                <h3 class="card-title">&#128649; Trains Stopping at Station: <span id="stationSearchHeading" style="color:var(--accent-blue);"></span></h3>
-                <button class="ctrl-btn" onclick="closeStationResults()">&#10005; Close</button>
-            </div>
-            <div class="station-trains-grid" id="stationTrainsGrid"></div>
-        </div>
-
-        <!-- Active Train Header -->
-        <div class="train-header-card" id="trainHeaderCard">
-            <div class="train-main-info">
-                <div class="train-tag" id="dispTrainNumber">12951</div>
-                <div class="train-title-box">
-                    <h2 id="dispTrainName">Mumbai Tejas Rajdhani Express</h2>
-                    <p id="dispTrainRoute">Mumbai Central (MMCT) &rarr; New Delhi (NDLS)</p>
-                </div>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <button class="ctrl-btn" onclick="prefillBookingForTrain(currentTrain)" style="background:#0284c7; color:white; border-color:#0284c7;">
-                    &#127915; Book Tickets for This Train
-                </button>
-                <div class="sim-status-chip">
-                    <span class="pulse-dot"></span>
-                    <span id="simStatusText">Simulation Active (Auto-updating every 5s)</span>
-                </div>
+    <!-- Header -->
+    <header>
+        <div class="logo-wrap" onclick="switchMainTab('tracking')">
+            <div class="logo-icon">&#128646;</div>
+            <div>
+                <div class="logo-text">Rail<span>Mate</span></div>
             </div>
         </div>
 
-        <!-- 4 Live Metric Cards -->
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-icon icon-station">&#128205;</div>
-                <div class="metric-content">
-                    <small>Current Demo Station</small>
-                    <strong id="metricCurrentStation">Mumbai Central (MMCT)</strong>
-                    <span id="metricDistance">0 km covered of 1386 km</span>
-                </div>
-            </div>
+        <!-- Navigation Tabs inside RailMate -->
+        <nav class="nav-tabs">
+            <button class="nav-btn active" id="navBtnTracking" onclick="switchMainTab('tracking')">
+                <span>&#128645;RailMate</span>
+            </button>
+            <button class="nav-btn" id="navBtnBooking" onclick="switchMainTab('booking')">
+                <span>&#127915; Book Demo Tickets</span>
+            </button>
+            <button class="nav-btn" id="navBtnMyBookings" onclick="switchMainTab('my-bookings')">
+                <span>&#128203; My Bookings</span>
+                <span class="nav-badge-count" id="myBookingsBadge">0</span>
+            </button>
+        </nav>
+    </header>
 
-            <div class="metric-card">
-                <div class="metric-icon icon-next">&#10140;</div>
-                <div class="metric-content">
-                    <small>Next Station Stop</small>
-                    <strong id="metricNextStation">Borivali (BVI)</strong>
-                    <span id="metricNextPlatform">Platform 6 &bull; 30 km ahead</span>
+    <!-- ========================================================= -->
+   
+    <!-- ========================================================= -->
+    <section id="viewTracking" class="app-view active-view">
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-tag-pill">
+                    <span class="hero-pulse"></span>
+                    RailMate
                 </div>
-            </div>
+                <h1><span class="gradient-title">Track Indian Trains</span> In Real Time</h1>
+                <p>
+                    Explore real Indian Railway routes, intermediate station timelines, live 5-second simulated GPS
+                    telemetry, and instant demo ticket booking.
+                </p>
 
-            <div class="metric-card">
-                <div class="metric-icon icon-eta">&#9200;</div>
-                <div class="metric-content">
-                    <small>Estimated Arrival</small>
-                    <strong id="metricEta">17:22 hrs</strong>
-                    <span id="metricSpeed">Speed: ~92 km/h</span>
-                </div>
-            </div>
+                <div class="search-container">
+                    <div class="tab-row">
+                        <button class="tab-btn active" id="tabTrain" onclick="switchSearchTab('train')">Find by Train
+                            (Name or Number)</button>
+                        <button class="tab-btn" id="tabStation" onclick="switchSearchTab('station')">Find Trains by
+                            Station</button>
+                    </div>
 
-            <div class="metric-card">
-                <div class="metric-icon icon-delay">&#9888;</div>
-                <div class="metric-content">
-                    <small>Simulated Delay</small>
-                    <strong id="metricDelay" style="color:#d97706;">5 min delay</strong>
-                    <span>Status: In Transit</span>
-                </div>
-            </div>
-        </div>
+                    <form class="search-form" onsubmit="handleTrainTrackingSearch(event)">
+                        <div class="search-input-wrap">
+                            <input type="text" id="trackingSearchInput" class="search-input"
+                                placeholder="Enter train number (e.g. 12951) or name (e.g. Rajdhani)"
+                                autocomplete="off">
+                        </div>
+                        <button type="submit" class="search-btn">
+                            <span>Search</span> &#128269;
+                        </button>
+                    </form>
 
-        <!-- Main Content: Map + Timeline -->
-        <div class="content-split">
-            <!-- Route Map & Controls -->
-            <div class="map-card">
-                <div class="card-top-bar">
-                    <div class="card-title">&#128506;&#65039; Interactive Route Map &amp; Live Train Marker</div>
-                    <div style="font-size:12px; color:var(--text-muted); font-weight:600;">
-                        Auto-refreshes every <strong id="speedLabel" style="color:var(--accent-orange);">5s</strong>
+                    <div class="quick-picks">
+                        <span>Popular Trains:</span>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('12951')">12951 Mumbai
+                            Rajdhani</button>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('22436')">22436 Vande Bharat
+                            Exp</button>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('12002')">12002 Bhopal
+                            Shatabdi</button>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('11077')">11077 Jhelum Exp
+                            (Jalgaon)</button>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('12301')">12301 Howrah
+                            Rajdhani</button>
+                        <button type="button" class="pick-pill" onclick="loadTrainDirect('12626')">12626 Kerala
+                            Express</button>
                     </div>
                 </div>
 
-                <div id="map"></div>
+                <!-- Trust Highlights Bar -->
+                <div class="hero-trust-bar">
+                    <div class="hero-trust-item">
+                        <span class="icon">⚡</span>
+                        <span>160 km/h Tested Corridors</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <span class="icon">🛰️</span>
+                        <span>5s Dynamic Telemetry</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <span class="icon">🗺️</span>
+                        <span>OpenStreetMap Engine</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <span class="icon">🎫</span>
+                        <span>Instant Demo ERS Tickets</span>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Simulation Controls -->
-                <div class="sim-controls-panel">
-                    <div class="sim-buttons-row">
-                        <div class="ctrl-group">
-                            <button class="ctrl-btn btn-play" id="btnPlayPause" onclick="togglePlayPause()">
-                                <span id="playIcon">&#9646;&#9646;</span> <span id="playText">Pause</span>
-                            </button>
-                            <button class="ctrl-btn" onclick="resetSimulation()" title="Restart from origin">
-                                &#8634; Reset
-                            </button>
-                            <button class="ctrl-btn" onclick="stepForward()" title="Step 5 seconds ahead">
-                                &#9654;| Step Ahead
-                            </button>
+            <!-- Photo Attribution Badge -->
+            <div class="hero-photo-badge">
+                <span>📷 Indian Railways &bull; Vande Bharat Express on Scenic Route</span>
+            </div>
+        </div>
+
+        <main>
+            <!-- Station Search Results Drawer -->
+            <div class="station-results-box" id="stationResultsBox">
+                <div class="card-top-bar">
+                    <h3 class="card-title">&#128649; Trains Stopping at Station: <span id="stationSearchHeading"
+                            style="color:var(--accent-blue);"></span></h3>
+                    <button class="ctrl-btn" onclick="closeStationResults()">&#10005; Close</button>
+                </div>
+                <div class="station-trains-grid" id="stationTrainsGrid"></div>
+            </div>
+
+            <!-- Active Train Header -->
+            <div class="train-header-card" id="trainHeaderCard">
+                <div class="train-main-info">
+                    <div class="train-tag" id="dispTrainNumber">12951</div>
+                    <div class="train-title-box">
+                        <h2 id="dispTrainName">Mumbai Tejas Rajdhani Express</h2>
+                        <p id="dispTrainRoute">Mumbai Central (MMCT) &rarr; New Delhi (NDLS)</p>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <button class="ctrl-btn" onclick="prefillBookingForTrain(currentTrain)"
+                        style="background:#0284c7; color:white; border-color:#0284c7;">
+                        &#127915; Book Tickets for This Train
+                    </button>
+                    <div class="sim-status-chip">
+                        <span class="pulse-dot"></span>
+                        <span id="simStatusText">Simulation Active (Auto-updating every 5s)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Live Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon icon-station">&#128205;</div>
+                    <div class="metric-content">
+                        <small>Current Demo Station</small>
+                        <strong id="metricCurrentStation">Mumbai Central (MMCT)</strong>
+                        <span id="metricDistance">0 km covered of 1386 km</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-next">&#10140;</div>
+                    <div class="metric-content">
+                        <small>Next Station Stop</small>
+                        <strong id="metricNextStation">Borivali (BVI)</strong>
+                        <span id="metricNextPlatform">Platform 6 &bull; 30 km ahead</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-eta">&#9200;</div>
+                    <div class="metric-content">
+                        <small>Estimated Arrival</small>
+                        <strong id="metricEta">17:22 hrs</strong>
+                        <span id="metricSpeed">Speed: ~92 km/h</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-delay">&#9888;</div>
+                    <div class="metric-content">
+                        <small>Simulated Delay</small>
+                        <strong id="metricDelay" style="color:#d97706;">5 min delay</strong>
+                        <span>Status: In Transit</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Map + Timeline -->
+            <div class="content-split">
+                <!-- Route Map & Controls -->
+                <div class="map-card">
+                    <div class="card-top-bar">
+                        <div class="card-title">&#128506;&#65039; Interactive Route Map &amp; Live Train Marker</div>
+                        <div style="font-size:12px; color:var(--text-muted); font-weight:600;">
+                            Auto-refreshes every <strong id="speedLabel" style="color:var(--accent-orange);">5s</strong>
                         </div>
+                    </div>
 
-                        <div class="ctrl-group">
-                            <span style="font-size:12px; font-weight:700; color:var(--text-muted);">SIM SPEED:</span>
-                            <div class="speed-btn-group">
-                                <button class="speed-btn active" id="spd1" onclick="setSimSpeed(1, 5000)">1x (5s)</button>
-                                <button class="speed-btn" id="spd2" onclick="setSimSpeed(2, 2500)">2x (2.5s)</button>
-                                <button class="speed-btn" id="spd4" onclick="setSimSpeed(4, 1000)">5x (1s)</button>
+                    <div id="map"></div>
+
+                    <!-- Simulation Controls -->
+                    <div class="sim-controls-panel">
+                        <div class="sim-buttons-row">
+                            <div class="ctrl-group">
+                                <button class="ctrl-btn btn-play" id="btnPlayPause" onclick="togglePlayPause()">
+                                    <span id="playIcon">&#9646;&#9646;</span> <span id="playText">Pause</span>
+                                </button>
+                                <button class="ctrl-btn" onclick="resetSimulation()" title="Restart from origin">
+                                    &#8634; Reset
+                                </button>
+                                <button class="ctrl-btn" onclick="stepForward()" title="Step 5 seconds ahead">
+                                    &#9654;| Step Ahead
+                                </button>
+                            </div>
+
+                            <div class="ctrl-group">
+                                <span style="font-size:12px; font-weight:700; color:var(--text-muted);">SIM
+                                    SPEED:</span>
+                                <div class="speed-btn-group">
+                                    <button class="speed-btn active" id="spd1" onclick="setSimSpeed(1, 5000)">1x
+                                        (5s)</button>
+                                    <button class="speed-btn" id="spd2" onclick="setSimSpeed(2, 2500)">2x
+                                        (2.5s)</button>
+                                    <button class="speed-btn" id="spd4" onclick="setSimSpeed(4, 1000)">5x (1s)</button>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="slider-wrap">
+                            <span>Origin</span>
+                            <input type="range" id="simProgressSlider" class="sim-slider" min="0" max="100" value="0"
+                                step="0.5" oninput="onSliderScrub(this.value)">
+                            <span>Destination (<span id="sliderPercent">0%</span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Station Timeline Visualizer -->
+                <div class="timeline-card">
+                    <div class="card-top-bar">
+                        <div class="card-title">&#128652; Station Timeline &amp; Stops</div>
+                        <span style="font-size:12px; color:var(--text-muted); font-weight:600;" id="timelineStopCount">7
+                            Stations</span>
                     </div>
 
-                    <div class="slider-wrap">
-                        <span>Origin</span>
-                        <input
-                            type="range"
-                            id="simProgressSlider"
-                            class="sim-slider"
-                            min="0"
-                            max="100"
-                            value="0"
-                            step="0.5"
-                            oninput="onSliderScrub(this.value)"
-                        >
-                        <span>Destination (<span id="sliderPercent">0%</span>)</span>
+                    <div class="timeline-scroll">
+                        <div class="timeline-list" id="timelineList"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Station Timeline Visualizer -->
-            <div class="timeline-card">
-                <div class="card-top-bar">
-                    <div class="card-title">&#128652; Station Timeline &amp; Stops</div>
-                    <span style="font-size:12px; color:var(--text-muted); font-weight:600;" id="timelineStopCount">7 Stations</span>
+            <!-- College Project Disclaimer -->
+            <div class="disclaimer-card">
+                <div class="disclaimer-icon">&#9432;</div>
+                <div class="disclaimer-text">
+                    <h4>ACADEMIC &amp; DEMONSTRATION DISCLAIMER</h4>
+                    <p>
+                       <strong>RailMate</strong> is a train tracking project designed to demonstrate
+Indian Railway routes, interactive maps, and train tracking simulation.
+All train positions, coordinates, speeds, and delays displayed on this page are
+<strong>simulated demonstration data</strong>.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 2: BOOK DEMO TICKETS                                 -->
+    <!-- ========================================================= -->
+    <section id="viewBooking" class="app-view">
+        <div class="booking-hero">
+            <h1>&#127915; Indian Railway Demo Ticket Booking</h1>
+            <p>Search Indian trains, check demo seat availability &amp; fares, and generate printable demo tickets.</p>
+        </div>
+
+        <!-- Booking Search Form -->
+        <div class="booking-search-card">
+            <form id="ticketSearchForm" onsubmit="handleTicketSearch(event)">
+                <div class="booking-grid-form">
+                    <div class="input-group">
+                        <label for="bookFromStation">From Station</label>
+                        <input type="text" id="bookFromStation" class="form-control" placeholder="e.g. Mumbai or MMCT"
+                            list="stationOptions" required autocomplete="off">
+                    </div>
+
+                    <div style="display:flex; justify-content:center;">
+                        <button type="button" class="btn-swap-stations" onclick="swapBookingStations()"
+                            title="Swap stations">&#8646;</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bookToStation">To Station</label>
+                        <input type="text" id="bookToStation" class="form-control" placeholder="e.g. New Delhi or NDLS"
+                            list="stationOptions" required autocomplete="off">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bookDate">Journey Date</label>
+                        <input type="date" id="bookDate" class="form-control" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bookPassengerCount">Passengers</label>
+                        <select id="bookPassengerCount" class="form-control">
+                            <option value="1">1 Person</option>
+                            <option value="2">2 Persons</option>
+                            <option value="3">3 Persons</option>
+                            <option value="4">4 Persons</option>
+                            <option value="5">5 Persons</option>
+                            <option value="6">6 Persons</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bookTravelClass">Travel Class</label>
+                        <select id="bookTravelClass" class="form-control">
+                            <option value="ALL">All Classes</option>
+                            <option value="1A">First AC (1A)</option>
+                            <option value="2A">AC 2 Tier (2A)</option>
+                            <option value="3A">AC 3 Tier (3A)</option>
+                            <option value="SL">Sleeper (SL)</option>
+                            <option value="EC">Exec. Chair Car (EC)</option>
+                            <option value="CC">AC Chair Car (CC)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn-search-trains">
+                            <span>Search</span> &#128269;
+                        </button>
+                    </div>
                 </div>
 
-                <div class="timeline-scroll">
-                    <div class="timeline-list" id="timelineList"></div>
-                </div>
+                <datalist id="stationOptions"></datalist>
+            </form>
+
+            <!-- Quick Route Suggestions -->
+            <div class="quick-picks" style="margin-top:16px;">
+                <span>Try Popular Routes:</span>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('Mumbai Central', 'New Delhi')">Mumbai
+                    &rarr; New Delhi</button>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Varanasi Jn')">New Delhi
+                    &rarr; Varanasi</button>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('Pune Jn', 'Jalgaon Jn')">Pune &rarr;
+                    Jalgaon</button>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('Howrah Jn', 'New Delhi')">Howrah &rarr;
+                    New Delhi</button>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Rani Kamalapati')">New
+                    Delhi &rarr; Bhopal</button>
+                <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Thiruvananthapuram')">New
+                    Delhi &rarr; Kerala</button>
             </div>
         </div>
 
-        <!-- College Project Disclaimer -->
-        <div class="disclaimer-card">
-            <div class="disclaimer-icon">&#9432;</div>
-            <div class="disclaimer-text">
-                <h4>ACADEMIC &amp; DEMONSTRATION DISCLAIMER</h4>
-                <p>
-                    <strong>RailMate</strong> is a college project designed and developed by <strong>Bhavi_LM</strong> for demonstrating Indian Railway route tracking, interactive maps, and real-time state simulation.
-                    All train positions, coordinates, speeds, and delays displayed on this page are <strong>simulated demonstration data</strong>.
-                </p>
+        <!-- Search Results List -->
+        <main style="margin-top:0;">
+            <div id="bookingResultsArea">
+                <div class="results-header-bar">
+                    <h3 id="bookingResultsHeading" style="font-size:18px; font-weight:800; color:var(--primary);">
+                        Available Trains for Demo Booking
+                    </h3>
+                    <span id="bookingResultsSubheading"
+                        style="font-size:13px; color:var(--text-muted); font-weight:600;"></span>
+                </div>
+
+                <div id="bookingTrainCardsList">
+                    <!-- Populated dynamically -->
+                </div>
             </div>
+
+            <div class="disclaimer-card" style="margin-top:20px;">
+                <div class="disclaimer-icon">&#127915;</div>
+                <div class="disclaimer-text">
+                    <h4>DEMO TICKET BOOKING SIMULATION NOTICE</h4>
+                    <p>
+                        <strong>DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS
+                            MADE.</strong><br>
+                        This is an educational simulation created by <strong>Bhavi_LM</strong>. Fares, seat numbers, and
+                        PNR codes are generated purely for college project demonstration.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 3: MY BOOKINGS                                       -->
+    <!-- ========================================================= -->
+    <section id="viewMyBookings" class="app-view">
+        <div class="booking-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+            <h1>&#128203; My Demo Bookings</h1>
+            <p>View your booked demo tickets, inspect seat allocations, print demo receipts, or cancel bookings.</p>
         </div>
-    </main>
-</section>
 
-<!-- ========================================================= -->
-<!-- VIEW 2: BOOK DEMO TICKETS                                 -->
-<!-- ========================================================= -->
-<section id="viewBooking" class="app-view">
-    <div class="booking-hero">
-        <h1>&#127915; Indian Railway Demo Ticket Booking</h1>
-        <p>Search Indian trains, check demo seat availability &amp; fares, and generate printable demo tickets.</p>
-    </div>
-
-    <!-- Booking Search Form -->
-    <div class="booking-search-card">
-        <form id="ticketSearchForm" onsubmit="handleTicketSearch(event)">
-            <div class="booking-grid-form">
-                <div class="input-group">
-                    <label for="bookFromStation">From Station</label>
-                    <input type="text" id="bookFromStation" class="form-control" placeholder="e.g. Mumbai or MMCT" list="stationOptions" required autocomplete="off">
+        <main>
+            <div
+                style="background:white; border-radius:14px; padding:18px 24px; border:1px solid var(--border-color); margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="text" id="pnrFilterInput" placeholder="Enter PNR number..." class="form-control"
+                        style="max-width:240px;">
+                    <button class="ctrl-btn" onclick="filterBookingsByPnr()">Search PNR</button>
+                    <button class="ctrl-btn" onclick="loadMyBookings()">Refresh All</button>
                 </div>
-
-                <div style="display:flex; justify-content:center;">
-                    <button type="button" class="btn-swap-stations" onclick="swapBookingStations()" title="Swap stations">&#8646;</button>
-                </div>
-
-                <div class="input-group">
-                    <label for="bookToStation">To Station</label>
-                    <input type="text" id="bookToStation" class="form-control" placeholder="e.g. New Delhi or NDLS" list="stationOptions" required autocomplete="off">
-                </div>
-
-                <div class="input-group">
-                    <label for="bookDate">Journey Date</label>
-                    <input type="date" id="bookDate" class="form-control" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="bookPassengerCount">Passengers</label>
-                    <select id="bookPassengerCount" class="form-control">
-                        <option value="1">1 Person</option>
-                        <option value="2">2 Persons</option>
-                        <option value="3">3 Persons</option>
-                        <option value="4">4 Persons</option>
-                        <option value="5">5 Persons</option>
-                        <option value="6">6 Persons</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label for="bookTravelClass">Travel Class</label>
-                    <select id="bookTravelClass" class="form-control">
-                        <option value="ALL">All Classes</option>
-                        <option value="1A">First AC (1A)</option>
-                        <option value="2A">AC 2 Tier (2A)</option>
-                        <option value="3A">AC 3 Tier (3A)</option>
-                        <option value="SL">Sleeper (SL)</option>
-                        <option value="EC">Exec. Chair Car (EC)</option>
-                        <option value="CC">AC Chair Car (CC)</option>
-                    </select>
-                </div>
-
                 <div>
-                    <button type="submit" class="btn-search-trains">
-                        <span>Search</span> &#128269;
+                    <button class="ctrl-btn" onclick="switchMainTab('booking')"
+                        style="background:var(--accent-orange); color:white; border-color:var(--accent-orange);">
+                        + Book New Demo Ticket
                     </button>
                 </div>
             </div>
 
-            <datalist id="stationOptions"></datalist>
-        </form>
-
-        <!-- Quick Route Suggestions -->
-        <div class="quick-picks" style="margin-top:16px;">
-            <span>Try Popular Routes:</span>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('Mumbai Central', 'New Delhi')">Mumbai &rarr; New Delhi</button>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Varanasi Jn')">New Delhi &rarr; Varanasi</button>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('Pune Jn', 'Jalgaon Jn')">Pune &rarr; Jalgaon</button>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('Howrah Jn', 'New Delhi')">Howrah &rarr; New Delhi</button>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Rani Kamalapati')">New Delhi &rarr; Bhopal</button>
-            <button type="button" class="pick-pill" onclick="quickFillRoute('New Delhi', 'Thiruvananthapuram')">New Delhi &rarr; Kerala</button>
-        </div>
-    </div>
-
-    <!-- Search Results List -->
-    <main style="margin-top:0;">
-        <div id="bookingResultsArea">
-            <div class="results-header-bar">
-                <h3 id="bookingResultsHeading" style="font-size:18px; font-weight:800; color:var(--primary);">
-                    Available Trains for Demo Booking
-                </h3>
-                <span id="bookingResultsSubheading" style="font-size:13px; color:var(--text-muted); font-weight:600;"></span>
-            </div>
-
-            <div id="bookingTrainCardsList">
+            <div id="myBookingsContainer">
                 <!-- Populated dynamically -->
             </div>
-        </div>
 
-        <div class="disclaimer-card" style="margin-top:20px;">
-            <div class="disclaimer-icon">&#127915;</div>
-            <div class="disclaimer-text">
-                <h4>DEMO TICKET BOOKING SIMULATION NOTICE</h4>
-                <p>
-                    <strong>DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.</strong><br>
-                    This is an educational simulation created by <strong>Bhavi_LM</strong>. Fares, seat numbers, and PNR codes are generated purely for college project demonstration.
-                </p>
-            </div>
-        </div>
-    </main>
-</section>
-
-<!-- ========================================================= -->
-<!-- VIEW 3: MY BOOKINGS                                       -->
-<!-- ========================================================= -->
-<section id="viewMyBookings" class="app-view">
-    <div class="booking-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-        <h1>&#128203; My Demo Bookings</h1>
-        <p>View your booked demo tickets, inspect seat allocations, print demo receipts, or cancel bookings.</p>
-    </div>
-
-    <main>
-        <div style="background:white; border-radius:14px; padding:18px 24px; border:1px solid var(--border-color); margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <input type="text" id="pnrFilterInput" placeholder="Enter PNR number..." class="form-control" style="max-width:240px;">
-                <button class="ctrl-btn" onclick="filterBookingsByPnr()">Search PNR</button>
-                <button class="ctrl-btn" onclick="loadMyBookings()">Refresh All</button>
-            </div>
-            <div>
-                <button class="ctrl-btn" onclick="switchMainTab('booking')" style="background:var(--accent-orange); color:white; border-color:var(--accent-orange);">
-                    + Book New Demo Ticket
-                </button>
-            </div>
-        </div>
-
-        <div id="myBookingsContainer">
-            <!-- Populated dynamically -->
-        </div>
-
-        <div class="disclaimer-card">
-            <div class="disclaimer-icon">&#9432;</div>
-            <div class="disclaimer-text">
-                <h4>SIMULATION NOTICE</h4>
-                <p>
-                    Demo bookings are saved locally. Cancelling a demo ticket releases the demo seats and simulates an instant demonstration refund. No financial transactions take place.
-                </p>
-            </div>
-        </div>
-    </main>
-</section>
-
-<!-- ========================================================= -->
-<!-- MODAL: PASSENGER DETAILS FORM                             -->
-<!-- ========================================================= -->
-<div class="modal-overlay" id="passengerModal">
-    <div class="modal-window">
-        <div class="modal-header">
-            <div>
-                <h3 id="modalTrainTitle">Passenger Details</h3>
-                <small id="modalTrainSub" style="color:var(--text-muted); font-weight:600;"></small>
-            </div>
-            <button class="modal-close-btn" onclick="closePassengerModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <form id="passengerDetailsForm" onsubmit="submitDemoBooking(event)">
-                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px 16px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <strong style="color:#1e40af; font-size:14px;" id="modalSelectedClass">Class: 3A</strong> &bull;
-                        <span style="font-size:13px; color:#1e40af;" id="modalClassFare">₹1,740 per person</span>
-                    </div>
-                    <div style="font-size:12px; font-weight:700; color:#1e40af;">
-                        Demo PNR will be auto-generated
-                    </div>
+            <div class="disclaimer-card">
+                <div class="disclaimer-icon">&#9432;</div>
+                <div class="disclaimer-text">
+                    <h4>SIMULATION NOTICE</h4>
+                    <p>
+                        Demo bookings are saved locally. Cancelling a demo ticket releases the demo seats and simulates
+                        an instant demonstration refund. No financial transactions take place.
+                    </p>
                 </div>
+            </div>
+        </main>
+    </section>
 
-                <div id="passengerInputsContainer">
-                    <!-- Populated dynamically based on passenger count -->
+    <!-- ========================================================= -->
+    <!-- MODAL: PASSENGER DETAILS FORM                             -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="passengerModal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalTrainTitle">Passenger Details</h3>
+                    <small id="modalTrainSub" style="color:var(--text-muted); font-weight:600;"></small>
                 </div>
+                <button class="modal-close-btn" onclick="closePassengerModal()">&times;</button>
+            </div>
 
-                <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; padding:14px; margin-top:14px;">
-                    <h4 style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:10px;">Contact Information (For Demo Ticket Slip)</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="modal-body">
+                <form id="passengerDetailsForm" onsubmit="submitDemoBooking(event)">
+                    <div
+                        style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px 16px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
-                            <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Mobile Number</label>
-                            <input type="tel" id="contactMobile" class="form-control" value="9876543210" required>
+                            <strong style="color:#1e40af; font-size:14px;" id="modalSelectedClass">Class: 3A</strong>
+                            &bull;
+                            <span style="font-size:13px; color:#1e40af;" id="modalClassFare">₹1,740 per person</span>
                         </div>
-                        <div>
-                            <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Email ID</label>
-                            <input type="email" id="contactEmail" class="form-control" value="demo.passenger@railmate.local" required>
+                        <div style="font-size:12px; font-weight:700; color:#1e40af;">
+                            Demo PNR will be auto-generated
                         </div>
                     </div>
-                </div>
 
-                <div style="margin-top:18px; background:#fff7ed; border:1px solid #ffedd5; padding:12px 14px; border-radius:8px; font-size:12px; color:#9a3412;">
-                    &#9888; <strong>SIMULATION MODE:</strong> No payment details (credit card, UPI, bank) or Aadhaar numbers are collected. Clicking confirm will instantly approve the demo reservation.
-                </div>
-
-                <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                    <div>
-                        <span style="font-size:12px; color:var(--text-muted); font-weight:700;">TOTAL DEMO AMOUNT:</span>
-                        <div style="font-size:22px; font-weight:900; color:#0284c7;" id="modalTotalAmount">₹ 1,740</div>
+                    <div id="passengerInputsContainer">
+                        <!-- Populated dynamically based on passenger count -->
                     </div>
 
-                    <div style="display:flex; gap:10px;">
-                        <button type="button" class="ctrl-btn" onclick="closePassengerModal()">Cancel</button>
-                        <button type="submit" class="ctrl-btn" style="background:var(--accent-orange); color:white; border-color:var(--accent-orange); padding:10px 24px; font-size:14px;">
-                            Confirm Demo Booking &rarr;
-                        </button>
+                    <div
+                        style="background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; padding:14px; margin-top:14px;">
+                        <h4 style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:10px;">Contact
+                            Information (For Demo Ticket Slip)</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div>
+                                <label
+                                    style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Mobile
+                                    Number</label>
+                                <input type="tel" id="contactMobile" class="form-control" value="9876543210" required>
+                            </div>
+                            <div>
+                                <label
+                                    style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Email
+                                    ID</label>
+                                <input type="email" id="contactEmail" class="form-control"
+                                    value="demo.passenger@railmate.local" required>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- ========================================================= -->
-<!-- MODAL: PRINTABLE DEMO TICKET                              -->
-<!-- ========================================================= -->
-<div class="modal-overlay" id="printableTicketModal">
-    <div class="modal-window" style="max-width:760px;">
-        <div class="modal-header no-print">
-            <h3 style="color:#16a34a;">&#10004; Demo Electronic Reservation Slip (ERS)</h3>
-            <button class="modal-close-btn" onclick="closeTicketModal()">&times;</button>
-        </div>
+                    <div
+                        style="margin-top:18px; background:#fff7ed; border:1px solid #ffedd5; padding:12px 14px; border-radius:8px; font-size:12px; color:#9a3412;">
+                        &#9888; <strong>SIMULATION MODE:</strong> No payment details (credit card, UPI, bank) or Aadhaar
+                        numbers are collected. Clicking confirm will instantly approve the demo reservation.
+                    </div>
 
-        <div class="modal-body" id="ticketPrintContent">
-            <!-- Populated dynamically -->
-        </div>
+                    <div
+                        style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <span style="font-size:12px; color:var(--text-muted); font-weight:700;">TOTAL DEMO
+                                AMOUNT:</span>
+                            <div style="font-size:22px; font-weight:900; color:#0284c7;" id="modalTotalAmount">₹ 1,740
+                            </div>
+                        </div>
 
-        <div class="modal-header no-print" style="border-top:1px solid var(--border-color); border-radius:0 0 16px 16px; justify-content:space-between;">
-            <button class="ctrl-btn" onclick="closeTicketModal()">Close</button>
-            <div style="display:flex; gap:10px;">
-                <button class="ctrl-btn" onclick="trackFromTicket()" style="background:#0284c7; color:white; border-color:#0284c7;">
-                    &#128645; Track This Train
-                </button>
-                <button class="ctrl-btn" onclick="window.print()" style="background:var(--primary); color:white; border-color:var(--primary);">
-                    &#128424; Print Demo Ticket
-                </button>
+                        <div style="display:flex; gap:10px;">
+                            <button type="button" class="ctrl-btn" onclick="closePassengerModal()">Cancel</button>
+                            <button type="submit" class="ctrl-btn"
+                                style="background:var(--accent-orange); color:white; border-color:var(--accent-orange); padding:10px 24px; font-size:14px;">
+                                Confirm Demo Booking &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Footer -->
-<footer>
-    <div><strong>RailMate</strong> &mdash; Indian Railway Train Tracking &amp; Demo Ticket Booking</div>
-    <div style="margin: 6px 0;">
-        Designed &amp; Developed for BCA College Project by <span class="creator-highlight">Bhavi_LM</span>
+    <!-- ========================================================= -->
+    <!-- MODAL: PRINTABLE DEMO TICKET                              -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="printableTicketModal">
+        <div class="modal-window" style="max-width:760px;">
+            <div class="modal-header no-print">
+                <h3 style="color:#16a34a;">&#10004; Demo Electronic Reservation Slip (ERS)</h3>
+                <button class="modal-close-btn" onclick="closeTicketModal()">&times;</button>
+            </div>
+
+            <div class="modal-body" id="ticketPrintContent">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="modal-header no-print"
+                style="border-top:1px solid var(--border-color); border-radius:0 0 16px 16px; justify-content:space-between;">
+                <button class="ctrl-btn" onclick="closeTicketModal()">Close</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="ctrl-btn" onclick="trackFromTicket()"
+                        style="background:#0284c7; color:white; border-color:#0284c7;">
+                        &#128645; Track This Train
+                    </button>
+                    <button class="ctrl-btn" onclick="window.print()"
+                        style="background:var(--primary); color:white; border-color:var(--primary);">
+                        &#128424; Print Demo Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="font-size:11px; opacity:0.8; margin-top:8px;">
-        Powered by Leaflet.js &bull; OpenStreetMap &bull; Express.js &bull; 100% Free Demo Mode
-    </div>
-</footer>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Footer -->
+    <footer>
+        <div><strong>RailMate</strong> &mdash; Indian Railway Train Tracking &amp; Demo Ticket Booking</div>
+        <div style="margin: 6px 0;">
+            Designed &amp; Developed for BCA College Project by <span class="creator-highlight">Bhavi_LM</span>
+        </div>
+        <div style="font-size:11px; opacity:0.8; margin-top:8px;">
+            Powered by Leaflet.js &bull; OpenStreetMap &bull; Express.js &bull; 100% Free Demo Mode
+        </div>
+    </footer>
 
-<script>
-/**
- * RailMate Built-in Indian Railways Simulation & Booking Dataset
- * Creator: Bhavi_LM
- */
-const CLASS_CONFIG = {
-  "1A": { name: "First AC (1A)", ratePerKm: 2.8, resFee: 60, minFare: 500, coachPrefix: "H" },
-  "2A": { name: "AC 2 Tier (2A)", ratePerKm: 1.75, resFee: 50, minFare: 350, coachPrefix: "A" },
-  "3A": { name: "AC 3 Tier (3A)", ratePerKm: 1.18, resFee: 40, minFare: 250, coachPrefix: "B" },
-  "SL": { name: "Sleeper (SL)",   ratePerKm: 0.48, resFee: 20, minFare: 120, coachPrefix: "S" },
-  "EC": { name: "Exec. Chair Car (EC)", ratePerKm: 2.3, resFee: 50, minFare: 400, coachPrefix: "E" },
-  "CC": { name: "AC Chair Car (CC)", ratePerKm: 1.25, resFee: 40, minFare: 200, coachPrefix: "C" }
-};
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-const BUILTIN_TRAINS = [
-  {
-    trainNumber: "12951",
-    trainName: "Mumbai Tejas Rajdhani Express",
-    trainType: "Tejas Rajdhani",
-    from: "Mumbai Central (MMCT)",
-    to: "New Delhi (NDLS)",
-    departureTime: "17:00",
-    arrivalTime: "08:32 (+1 day)",
-    totalDistanceKm: 1386,
-    avgSpeedKmh: 92,
-    demoDelayMinutes: 5,
-    availableClasses: ["1A", "2A", "3A"],
-    stations: [
-      { code: "MMCT", name: "Mumbai Central", lat: 18.9696, lng: 72.8193, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:00", platform: "1", day: 1 },
-      { code: "BVI",  name: "Borivali",       lat: 19.2288, lng: 72.8569, distanceKm: 30, scheduledArrival: "17:22", scheduledDeparture: "17:24", platform: "6", day: 1 },
-      { code: "ST",   name: "Surat",          lat: 21.2052, lng: 72.8407, distanceKm: 263, scheduledArrival: "19:43", scheduledDeparture: "19:48", platform: "1", day: 1 },
-      { code: "BRC",  name: "Vadodara Jn",    lat: 22.3107, lng: 73.1812, distanceKm: 393, scheduledArrival: "21:06", scheduledDeparture: "21:16", platform: "2", day: 1 },
-      { code: "RTM",  name: "Ratlam Jn",      lat: 23.3340, lng: 75.0375, distanceKm: 653, scheduledArrival: "00:25", scheduledDeparture: "00:28", platform: "5", day: 2 },
-      { code: "KOTA", name: "Kota Jn",        lat: 25.2217, lng: 75.8754, distanceKm: 920, scheduledArrival: "03:15", scheduledDeparture: "03:20", platform: "1", day: 2 },
-      { code: "NDLS", name: "New Delhi",      lat: 28.6430, lng: 77.2197, distanceKm: 1386, scheduledArrival: "08:32", scheduledDeparture: "Destination", platform: "3", day: 2 }
-    ]
-  },
-  {
-    trainNumber: "22436",
-    trainName: "Vande Bharat Express",
-    trainType: "Vande Bharat",
-    from: "New Delhi (NDLS)",
-    to: "Varanasi Jn (BSB)",
-    departureTime: "06:00",
-    arrivalTime: "14:00",
-    totalDistanceKm: 759,
-    avgSpeedKmh: 95,
-    demoDelayMinutes: 0,
-    availableClasses: ["EC", "CC"],
-    stations: [
-      { code: "NDLS", name: "New Delhi",         lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "16", day: 1 },
-      { code: "CNB",  name: "Kanpur Central",     lat: 26.4539, lng: 80.3510, distanceKm: 440, scheduledArrival: "10:08", scheduledDeparture: "10:10", platform: "1", day: 1 },
-      { code: "PRYJ", name: "Prayagraj Jn",      lat: 25.4484, lng: 81.8335, distanceKm: 634, scheduledArrival: "12:08", scheduledDeparture: "12:10", platform: "6", day: 1 },
-      { code: "BSB",  name: "Varanasi Jn",        lat: 25.3284, lng: 82.9868, distanceKm: 759, scheduledArrival: "14:00", scheduledDeparture: "Destination", platform: "1", day: 1 }
-    ]
-  },
-  {
-    trainNumber: "12002",
-    trainName: "Bhopal Shatabdi Express",
-    trainType: "Shatabdi Express",
-    from: "New Delhi (NDLS)",
-    to: "Rani Kamalapati Bhopal (RKMP)",
-    departureTime: "06:00",
-    arrivalTime: "14:40",
-    totalDistanceKm: 708,
-    avgSpeedKmh: 83,
-    demoDelayMinutes: 12,
-    availableClasses: ["EC", "CC"],
-    stations: [
-      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "1", day: 1 },
-      { code: "MTJ",  name: "Mathura Jn",           lat: 27.4924, lng: 77.6737, distanceKm: 141, scheduledArrival: "07:19", scheduledDeparture: "07:20", platform: "1", day: 1 },
-      { code: "AGC",  name: "Agra Cantt",           lat: 27.1592, lng: 77.9904, distanceKm: 195, scheduledArrival: "07:50", scheduledDeparture: "07:55", platform: "1", day: 1 },
-      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "09:23", scheduledDeparture: "09:28", platform: "1", day: 1 },
-      { code: "VGLJ", name: "VGL Jhansi Jn",        lat: 25.4484, lng: 78.5685, distanceKm: 410, scheduledArrival: "10:45", scheduledDeparture: "10:50", platform: "1", day: 1 },
-      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "14:07", scheduledDeparture: "14:12", platform: "1", day: 1 },
-      { code: "RKMP", name: "Rani Kamalapati",      lat: 23.2045, lng: 77.4390, distanceKm: 708, scheduledArrival: "14:40", scheduledDeparture: "Destination", platform: "5", day: 1 }
-    ]
-  },
-  {
-    trainNumber: "12301",
-    trainName: "Howrah Rajdhani Express",
-    trainType: "Rajdhani Express",
-    from: "Howrah Jn (HWH)",
-    to: "New Delhi (NDLS)",
-    departureTime: "16:50",
-    arrivalTime: "10:05 (+1 day)",
-    totalDistanceKm: 1451,
-    avgSpeedKmh: 85,
-    demoDelayMinutes: 8,
-    availableClasses: ["1A", "2A", "3A"],
-    stations: [
-      { code: "HWH",  name: "Howrah Jn",            lat: 22.5839, lng: 88.3433, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "16:50", platform: "9", day: 1 },
-      { code: "ASN",  name: "Asansol Jn",           lat: 23.6841, lng: 86.9634, distanceKm: 200, scheduledArrival: "18:57", scheduledDeparture: "19:00", platform: "4", day: 1 },
-      { code: "DHN",  name: "Dhanbad Jn",           lat: 23.7957, lng: 86.4304, distanceKm: 259, scheduledArrival: "19:50", scheduledDeparture: "19:55", platform: "3", day: 1 },
-      { code: "GAYA", name: "Gaya Jn",              lat: 24.8016, lng: 85.0069, distanceKm: 459, scheduledArrival: "22:19", scheduledDeparture: "22:22", platform: "1", day: 1 },
-      { code: "DDU",  name: "Pt Deen Dayal Upadhyaya", lat: 25.2818, lng: 83.1197, distanceKm: 664, scheduledArrival: "00:45", scheduledDeparture: "00:55", platform: "4", day: 2 },
-      { code: "PRYJ", name: "Prayagraj Jn",         lat: 25.4484, lng: 81.8335, distanceKm: 816, scheduledArrival: "02:43", scheduledDeparture: "02:45", platform: "1", day: 2 },
-      { code: "CNB",  name: "Kanpur Central",        lat: 26.4539, lng: 80.3510, distanceKm: 1010, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "1", day: 2 },
-      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 1451, scheduledArrival: "10:05", scheduledDeparture: "Destination", platform: "4", day: 2 }
-    ]
-  },
-  {
-    trainNumber: "11077",
-    trainName: "Jhelum Express",
-    trainType: "Express",
-    from: "Pune Jn (PUNE)",
-    to: "Jammu Tawi (JAT)",
-    departureTime: "17:20",
-    arrivalTime: "09:45 (+2 days)",
-    totalDistanceKm: 2176,
-    avgSpeedKmh: 54,
-    demoDelayMinutes: 15,
-    availableClasses: ["2A", "3A", "SL"],
-    stations: [
-      { code: "PUNE", name: "Pune Jn",              lat: 18.5289, lng: 73.8744, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:20", platform: "3", day: 1 },
-      { code: "ANG",  name: "Ahmednagar",           lat: 19.0948, lng: 74.7479, distanceKm: 155, scheduledArrival: "19:57", scheduledDeparture: "20:00", platform: "1", day: 1 },
-      { code: "MMR",  name: "Manmad Jn",            lat: 20.2520, lng: 74.4379, distanceKm: 308, scheduledArrival: "23:10", scheduledDeparture: "23:15", platform: "2", day: 1 },
-      { code: "JL",   name: "Jalgaon Jn",           lat: 21.0077, lng: 75.5626, distanceKm: 468, scheduledArrival: "01:43", scheduledDeparture: "01:45", platform: "3", day: 2 },
-      { code: "BSL",  name: "Bhusawal Jn",          lat: 21.0475, lng: 75.7953, distanceKm: 492, scheduledArrival: "02:15", scheduledDeparture: "02:20", platform: "5", day: 2 },
-      { code: "KNW",  name: "Khandwa Jn",           lat: 21.8242, lng: 76.3533, distanceKm: 616, scheduledArrival: "04:32", scheduledDeparture: "04:35", platform: "2", day: 2 },
-      { code: "ET",   name: "Itarsi Jn",            lat: 22.6139, lng: 77.7639, distanceKm: 799, scheduledArrival: "07:15", scheduledDeparture: "07:25", platform: "1", day: 2 },
-      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 891, scheduledArrival: "08:50", scheduledDeparture: "08:55", platform: "2", day: 2 },
-      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 1280, scheduledArrival: "14:40", scheduledDeparture: "14:45", platform: "1", day: 2 },
-      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 1593, scheduledArrival: "21:25", scheduledDeparture: "21:40", platform: "7", day: 2 },
-      { code: "JAT",  name: "Jammu Tawi",           lat: 32.7063, lng: 74.8797, distanceKm: 2176, scheduledArrival: "09:45", scheduledDeparture: "Destination", platform: "1", day: 3 }
-    ]
-  },
-  {
-    trainNumber: "12626",
-    trainName: "Kerala Express",
-    trainType: "Superfast",
-    from: "New Delhi (NDLS)",
-    to: "Thiruvananthapuram Central (TVC)",
-    departureTime: "20:10",
-    arrivalTime: "19:00 (+2 days)",
-    totalDistanceKm: 3036,
-    avgSpeedKmh: 65,
-    demoDelayMinutes: 20,
-    availableClasses: ["2A", "3A", "SL"],
-    stations: [
-      { code: "NDLS", name: "New Delhi",            lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "20:10", platform: "2", day: 1 },
-      { code: "GWL",  name: "Gwalior Jn",           lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "00:03", scheduledDeparture: "00:05", platform: "1", day: 2 },
-      { code: "BPL",  name: "Bhopal Jn",            lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "05:20", scheduledDeparture: "05:25", platform: "1", day: 2 },
-      { code: "NGP",  name: "Nagpur Jn",            lat: 21.1524, lng: 79.0888, distanceKm: 1092, scheduledArrival: "11:45", scheduledDeparture: "11:50", platform: "2", day: 2 },
-      { code: "BZA",  name: "Vijayawada Jn",        lat: 16.5173, lng: 80.6206, distanceKm: 1754, scheduledArrival: "21:40", scheduledDeparture: "21:50", platform: "1", day: 2 },
-      { code: "KPD",  name: "Katpadi Jn",           lat: 12.9702, lng: 79.1384, distanceKm: 2200, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "3", day: 3 },
-      { code: "CBE",  name: "Coimbatore Jn",        lat: 11.0016, lng: 76.9628, distanceKm: 2570, scheduledArrival: "10:25", scheduledDeparture: "10:30", platform: "1", day: 3 },
-      { code: "ERS",  name: "Ernakulam Jn",         lat: 9.9678,  lng: 76.2925, distanceKm: 2831, scheduledArrival: "15:20", scheduledDeparture: "15:25", platform: "1", day: 3 },
-      { code: "TVC",  name: "Thiruvananthapuram",   lat: 8.4875,  lng: 76.9525, distanceKm: 3036, scheduledArrival: "19:00", scheduledDeparture: "Destination", platform: "2", day: 3 }
-    ]
-  }
-];
+    <script>
+        /**
+         * RailMate Built-in Indian Railways Simulation & Booking Dataset
+         * Creator: railmate
+         */
+        const CLASS_CONFIG = {
+            "1A": { name: "First AC (1A)", ratePerKm: 2.8, resFee: 60, minFare: 500, coachPrefix: "H" },
+            "2A": { name: "AC 2 Tier (2A)", ratePerKm: 1.75, resFee: 50, minFare: 350, coachPrefix: "A" },
+            "3A": { name: "AC 3 Tier (3A)", ratePerKm: 1.18, resFee: 40, minFare: 250, coachPrefix: "B" },
+            "SL": { name: "Sleeper (SL)", ratePerKm: 0.48, resFee: 20, minFare: 120, coachPrefix: "S" },
+            "EC": { name: "Exec. Chair Car (EC)", ratePerKm: 2.3, resFee: 50, minFare: 400, coachPrefix: "E" },
+            "CC": { name: "AC Chair Car (CC)", ratePerKm: 1.25, resFee: 40, minFare: 200, coachPrefix: "C" }
+        };
 
-// State Variables
-let currentTrain = BUILTIN_TRAINS[0];
-let simProgress = 15;
-let isPlaying = true;
-let simIntervalMs = 5000;
-let simTimer = null;
-let currentTrackingSearchTab = 'train';
-let currentActiveMainTab = 'tracking';
-
-// Leaflet Map Objects
-let map = null;
-let trainMarker = null;
-let stationMarkers = [];
-let routePolyline = null;
-
-// Booking State
-let selectedBookingTrain = null;
-let selectedBookingClass = null;
-let selectedBookingFare = null;
-let selectedFromStation = null;
-let selectedToStation = null;
-let currentTicketForView = null;
-
-// Initialize on Load
-document.addEventListener("DOMContentLoaded", function() {
-    initLeafletMap();
-    loadTrain(currentTrain);
-    startSimTimer();
-    populateStationDatalists();
-    setupDefaultJourneyDate();
-    updateMyBookingsBadge();
-    runInitialBookingSearch();
-});
-
-// Main Tab Navigation
-function switchMainTab(tab) {
-    currentActiveMainTab = tab;
-    ['tracking', 'booking', 'my-bookings'].forEach(t => {
-        const viewEl = document.getElementById(t === 'tracking' ? 'viewTracking' : (t === 'booking' ? 'viewBooking' : 'viewMyBookings'));
-        const btnEl = document.getElementById(t === 'tracking' ? 'navBtnTracking' : (t === 'booking' ? 'navBtnBooking' : 'navBtnMyBookings'));
-        if (viewEl) viewEl.classList.remove('active-view');
-        if (btnEl) btnEl.classList.remove('active');
-    });
-
-    if (tab === 'tracking') {
-        document.getElementById('viewTracking').classList.add('active-view');
-        document.getElementById('navBtnTracking').classList.add('active');
-        if (map) {
-            setTimeout(() => { map.invalidateSize(); }, 200);
-        }
-    } else if (tab === 'booking') {
-        document.getElementById('viewBooking').classList.add('active-view');
-        document.getElementById('navBtnBooking').classList.add('active');
-    } else if (tab === 'my-bookings') {
-        document.getElementById('viewMyBookings').classList.add('active-view');
-        document.getElementById('navBtnMyBookings').classList.add('active');
-        loadMyBookings();
-    }
-}
-
-// Populate Station Dropdowns/Datalists
-function populateStationDatalists() {
-    const list = document.getElementById("stationOptions");
-    if (!list) return;
-
-    const seen = new Set();
-    list.innerHTML = "";
-
-    BUILTIN_TRAINS.forEach(train => {
-        train.stations.forEach(st => {
-            if (!seen.has(st.code)) {
-                seen.add(st.code);
-                const opt = document.createElement("option");
-                opt.value = `${st.name} (${st.code})`;
-                list.appendChild(opt);
+        const BUILTIN_TRAINS = [
+            {
+                trainNumber: "12951",
+                trainName: "Mumbai Tejas Rajdhani Express",
+                trainType: "Tejas Rajdhani",
+                from: "Mumbai Central (MMCT)",
+                to: "New Delhi (NDLS)",
+                departureTime: "17:00",
+                arrivalTime: "08:32 (+1 day)",
+                totalDistanceKm: 1386,
+                avgSpeedKmh: 92,
+                demoDelayMinutes: 5,
+                availableClasses: ["1A", "2A", "3A"],
+                stations: [
+                    { code: "MMCT", name: "Mumbai Central", lat: 18.9696, lng: 72.8193, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:00", platform: "1", day: 1 },
+                    { code: "BVI", name: "Borivali", lat: 19.2288, lng: 72.8569, distanceKm: 30, scheduledArrival: "17:22", scheduledDeparture: "17:24", platform: "6", day: 1 },
+                    { code: "ST", name: "Surat", lat: 21.2052, lng: 72.8407, distanceKm: 263, scheduledArrival: "19:43", scheduledDeparture: "19:48", platform: "1", day: 1 },
+                    { code: "BRC", name: "Vadodara Jn", lat: 22.3107, lng: 73.1812, distanceKm: 393, scheduledArrival: "21:06", scheduledDeparture: "21:16", platform: "2", day: 1 },
+                    { code: "RTM", name: "Ratlam Jn", lat: 23.3340, lng: 75.0375, distanceKm: 653, scheduledArrival: "00:25", scheduledDeparture: "00:28", platform: "5", day: 2 },
+                    { code: "KOTA", name: "Kota Jn", lat: 25.2217, lng: 75.8754, distanceKm: 920, scheduledArrival: "03:15", scheduledDeparture: "03:20", platform: "1", day: 2 },
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 1386, scheduledArrival: "08:32", scheduledDeparture: "Destination", platform: "3", day: 2 }
+                ]
+            },
+            {
+                trainNumber: "22436",
+                trainName: "Vande Bharat Express",
+                trainType: "Vande Bharat",
+                from: "New Delhi (NDLS)",
+                to: "Varanasi Jn (BSB)",
+                departureTime: "06:00",
+                arrivalTime: "14:00",
+                totalDistanceKm: 759,
+                avgSpeedKmh: 95,
+                demoDelayMinutes: 0,
+                availableClasses: ["EC", "CC"],
+                stations: [
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "16", day: 1 },
+                    { code: "CNB", name: "Kanpur Central", lat: 26.4539, lng: 80.3510, distanceKm: 440, scheduledArrival: "10:08", scheduledDeparture: "10:10", platform: "1", day: 1 },
+                    { code: "PRYJ", name: "Prayagraj Jn", lat: 25.4484, lng: 81.8335, distanceKm: 634, scheduledArrival: "12:08", scheduledDeparture: "12:10", platform: "6", day: 1 },
+                    { code: "BSB", name: "Varanasi Jn", lat: 25.3284, lng: 82.9868, distanceKm: 759, scheduledArrival: "14:00", scheduledDeparture: "Destination", platform: "1", day: 1 }
+                ]
+            },
+            {
+                trainNumber: "12002",
+                trainName: "Bhopal Shatabdi Express",
+                trainType: "Shatabdi Express",
+                from: "New Delhi (NDLS)",
+                to: "Rani Kamalapati Bhopal (RKMP)",
+                departureTime: "06:00",
+                arrivalTime: "14:40",
+                totalDistanceKm: 708,
+                avgSpeedKmh: 83,
+                demoDelayMinutes: 12,
+                availableClasses: ["EC", "CC"],
+                stations: [
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "06:00", platform: "1", day: 1 },
+                    { code: "MTJ", name: "Mathura Jn", lat: 27.4924, lng: 77.6737, distanceKm: 141, scheduledArrival: "07:19", scheduledDeparture: "07:20", platform: "1", day: 1 },
+                    { code: "AGC", name: "Agra Cantt", lat: 27.1592, lng: 77.9904, distanceKm: 195, scheduledArrival: "07:50", scheduledDeparture: "07:55", platform: "1", day: 1 },
+                    { code: "GWL", name: "Gwalior Jn", lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "09:23", scheduledDeparture: "09:28", platform: "1", day: 1 },
+                    { code: "VGLJ", name: "VGL Jhansi Jn", lat: 25.4484, lng: 78.5685, distanceKm: 410, scheduledArrival: "10:45", scheduledDeparture: "10:50", platform: "1", day: 1 },
+                    { code: "BPL", name: "Bhopal Jn", lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "14:07", scheduledDeparture: "14:12", platform: "1", day: 1 },
+                    { code: "RKMP", name: "Rani Kamalapati", lat: 23.2045, lng: 77.4390, distanceKm: 708, scheduledArrival: "14:40", scheduledDeparture: "Destination", platform: "5", day: 1 }
+                ]
+            },
+            {
+                trainNumber: "12301",
+                trainName: "Howrah Rajdhani Express",
+                trainType: "Rajdhani Express",
+                from: "Howrah Jn (HWH)",
+                to: "New Delhi (NDLS)",
+                departureTime: "16:50",
+                arrivalTime: "10:05 (+1 day)",
+                totalDistanceKm: 1451,
+                avgSpeedKmh: 85,
+                demoDelayMinutes: 8,
+                availableClasses: ["1A", "2A", "3A"],
+                stations: [
+                    { code: "HWH", name: "Howrah Jn", lat: 22.5839, lng: 88.3433, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "16:50", platform: "9", day: 1 },
+                    { code: "ASN", name: "Asansol Jn", lat: 23.6841, lng: 86.9634, distanceKm: 200, scheduledArrival: "18:57", scheduledDeparture: "19:00", platform: "4", day: 1 },
+                    { code: "DHN", name: "Dhanbad Jn", lat: 23.7957, lng: 86.4304, distanceKm: 259, scheduledArrival: "19:50", scheduledDeparture: "19:55", platform: "3", day: 1 },
+                    { code: "GAYA", name: "Gaya Jn", lat: 24.8016, lng: 85.0069, distanceKm: 459, scheduledArrival: "22:19", scheduledDeparture: "22:22", platform: "1", day: 1 },
+                    { code: "DDU", name: "Pt Deen Dayal Upadhyaya", lat: 25.2818, lng: 83.1197, distanceKm: 664, scheduledArrival: "00:45", scheduledDeparture: "00:55", platform: "4", day: 2 },
+                    { code: "PRYJ", name: "Prayagraj Jn", lat: 25.4484, lng: 81.8335, distanceKm: 816, scheduledArrival: "02:43", scheduledDeparture: "02:45", platform: "1", day: 2 },
+                    { code: "CNB", name: "Kanpur Central", lat: 26.4539, lng: 80.3510, distanceKm: 1010, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "1", day: 2 },
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 1451, scheduledArrival: "10:05", scheduledDeparture: "Destination", platform: "4", day: 2 }
+                ]
+            },
+            {
+                trainNumber: "11077",
+                trainName: "Jhelum Express",
+                trainType: "Express",
+                from: "Pune Jn (PUNE)",
+                to: "Jammu Tawi (JAT)",
+                departureTime: "17:20",
+                arrivalTime: "09:45 (+2 days)",
+                totalDistanceKm: 2176,
+                avgSpeedKmh: 54,
+                demoDelayMinutes: 15,
+                availableClasses: ["2A", "3A", "SL"],
+                stations: [
+                    { code: "PUNE", name: "Pune Jn", lat: 18.5289, lng: 73.8744, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "17:20", platform: "3", day: 1 },
+                    { code: "ANG", name: "Ahmednagar", lat: 19.0948, lng: 74.7479, distanceKm: 155, scheduledArrival: "19:57", scheduledDeparture: "20:00", platform: "1", day: 1 },
+                    { code: "MMR", name: "Manmad Jn", lat: 20.2520, lng: 74.4379, distanceKm: 308, scheduledArrival: "23:10", scheduledDeparture: "23:15", platform: "2", day: 1 },
+                    { code: "JL", name: "Jalgaon Jn", lat: 21.0077, lng: 75.5626, distanceKm: 468, scheduledArrival: "01:43", scheduledDeparture: "01:45", platform: "3", day: 2 },
+                    { code: "BSL", name: "Bhusawal Jn", lat: 21.0475, lng: 75.7953, distanceKm: 492, scheduledArrival: "02:15", scheduledDeparture: "02:20", platform: "5", day: 2 },
+                    { code: "KNW", name: "Khandwa Jn", lat: 21.8242, lng: 76.3533, distanceKm: 616, scheduledArrival: "04:32", scheduledDeparture: "04:35", platform: "2", day: 2 },
+                    { code: "ET", name: "Itarsi Jn", lat: 22.6139, lng: 77.7639, distanceKm: 799, scheduledArrival: "07:15", scheduledDeparture: "07:25", platform: "1", day: 2 },
+                    { code: "BPL", name: "Bhopal Jn", lat: 23.2678, lng: 77.4126, distanceKm: 891, scheduledArrival: "08:50", scheduledDeparture: "08:55", platform: "2", day: 2 },
+                    { code: "GWL", name: "Gwalior Jn", lat: 26.2183, lng: 78.1828, distanceKm: 1280, scheduledArrival: "14:40", scheduledDeparture: "14:45", platform: "1", day: 2 },
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 1593, scheduledArrival: "21:25", scheduledDeparture: "21:40", platform: "7", day: 2 },
+                    { code: "JAT", name: "Jammu Tawi", lat: 32.7063, lng: 74.8797, distanceKm: 2176, scheduledArrival: "09:45", scheduledDeparture: "Destination", platform: "1", day: 3 }
+                ]
+            },
+            {
+                trainNumber: "12626",
+                trainName: "Kerala Express",
+                trainType: "Superfast",
+                from: "New Delhi (NDLS)",
+                to: "Thiruvananthapuram Central (TVC)",
+                departureTime: "20:10",
+                arrivalTime: "19:00 (+2 days)",
+                totalDistanceKm: 3036,
+                avgSpeedKmh: 65,
+                demoDelayMinutes: 20,
+                availableClasses: ["2A", "3A", "SL"],
+                stations: [
+                    { code: "NDLS", name: "New Delhi", lat: 28.6430, lng: 77.2197, distanceKm: 0, scheduledArrival: "Source", scheduledDeparture: "20:10", platform: "2", day: 1 },
+                    { code: "GWL", name: "Gwalior Jn", lat: 26.2183, lng: 78.1828, distanceKm: 313, scheduledArrival: "00:03", scheduledDeparture: "00:05", platform: "1", day: 2 },
+                    { code: "BPL", name: "Bhopal Jn", lat: 23.2678, lng: 77.4126, distanceKm: 702, scheduledArrival: "05:20", scheduledDeparture: "05:25", platform: "1", day: 2 },
+                    { code: "NGP", name: "Nagpur Jn", lat: 21.1524, lng: 79.0888, distanceKm: 1092, scheduledArrival: "11:45", scheduledDeparture: "11:50", platform: "2", day: 2 },
+                    { code: "BZA", name: "Vijayawada Jn", lat: 16.5173, lng: 80.6206, distanceKm: 1754, scheduledArrival: "21:40", scheduledDeparture: "21:50", platform: "1", day: 2 },
+                    { code: "KPD", name: "Katpadi Jn", lat: 12.9702, lng: 79.1384, distanceKm: 2200, scheduledArrival: "04:40", scheduledDeparture: "04:45", platform: "3", day: 3 },
+                    { code: "CBE", name: "Coimbatore Jn", lat: 11.0016, lng: 76.9628, distanceKm: 2570, scheduledArrival: "10:25", scheduledDeparture: "10:30", platform: "1", day: 3 },
+                    { code: "ERS", name: "Ernakulam Jn", lat: 9.9678, lng: 76.2925, distanceKm: 2831, scheduledArrival: "15:20", scheduledDeparture: "15:25", platform: "1", day: 3 },
+                    { code: "TVC", name: "Thiruvananthapuram", lat: 8.4875, lng: 76.9525, distanceKm: 3036, scheduledArrival: "19:00", scheduledDeparture: "Destination", platform: "2", day: 3 }
+                ]
             }
-        });
-    });
-}
+        ];
 
-function setupDefaultJourneyDate() {
-    const dateInput = document.getElementById("bookDate");
-    if (!dateInput) return;
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().split("T")[0];
-    dateInput.value = dateStr;
-    dateInput.min = new Date().toISOString().split("T")[0];
-}
+        // State Variables
+        let currentTrain = BUILTIN_TRAINS[0];
+        let simProgress = 15;
+        let isPlaying = true;
+        let simIntervalMs = 5000;
+        let simTimer = null;
+        let currentTrackingSearchTab = 'train';
+        let currentActiveMainTab = 'tracking';
 
-// =========================================================
-// LEAFLET MAP & SIMULATION ENGINE
-// =========================================================
-function initLeafletMap() {
-    map = L.map('map', {
-        zoomControl: true,
-        scrollWheelZoom: true
-    }).setView([22.5, 76.5], 6);
+        // Leaflet Map Objects
+        let map = null;
+        let trainMarker = null;
+        let stationMarkers = [];
+        let routePolyline = null;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-}
+        // Booking State
+        let selectedBookingTrain = null;
+        let selectedBookingClass = null;
+        let selectedBookingFare = null;
+        let selectedFromStation = null;
+        let selectedToStation = null;
+        let currentTicketForView = null;
 
-function loadTrain(train) {
-    currentTrain = train;
-    simProgress = 10;
-
-    document.getElementById("dispTrainNumber").textContent = train.trainNumber;
-    document.getElementById("dispTrainName").textContent = train.trainName;
-    document.getElementById("dispTrainRoute").textContent = `${train.from} → ${train.to}`;
-    document.getElementById("timelineStopCount").textContent = `${train.stations.length} Stations`;
-
-    drawMapRoute(train);
-    renderTimeline(train);
-    updateSimState();
-}
-
-function drawMapRoute(train) {
-    if (routePolyline) map.removeLayer(routePolyline);
-    stationMarkers.forEach(m => map.removeLayer(m));
-    stationMarkers = [];
-
-    const latLngs = train.stations.map(st => [st.lat, st.lng]);
-
-    routePolyline = L.polyline(latLngs, {
-        color: '#0284c7',
-        weight: 5,
-        opacity: 0.85,
-        dashArray: '8, 8',
-        lineCap: 'round'
-    }).addTo(map);
-
-    train.stations.forEach((st, idx) => {
-        const isTerminal = (idx === 0 || idx === train.stations.length - 1);
-        const iconHtml = `<div class="station-leaflet-icon ${isTerminal ? 'terminal' : ''}">${isTerminal ? '★' : (idx + 1)}</div>`;
-
-        const customIcon = L.divIcon({
-            html: iconHtml,
-            className: 'custom-station-icon',
-            iconSize: isTerminal ? [26, 26] : [22, 22],
-            iconAnchor: isTerminal ? [13, 13] : [11, 11]
+        // Initialize on Load
+        document.addEventListener("DOMContentLoaded", function () {
+            initLeafletMap();
+            loadTrain(currentTrain);
+            startSimTimer();
+            populateStationDatalists();
+            setupDefaultJourneyDate();
+            updateMyBookingsBadge();
+            runInitialBookingSearch();
         });
 
-        const marker = L.marker([st.lat, st.lng], { icon: customIcon }).addTo(map);
-        marker.bindPopup(`
+        // Main Tab Navigation
+        function switchMainTab(tab) {
+            currentActiveMainTab = tab;
+            ['tracking', 'booking', 'my-bookings'].forEach(t => {
+                const viewEl = document.getElementById(t === 'tracking' ? 'viewTracking' : (t === 'booking' ? 'viewBooking' : 'viewMyBookings'));
+                const btnEl = document.getElementById(t === 'tracking' ? 'navBtnTracking' : (t === 'booking' ? 'navBtnBooking' : 'navBtnMyBookings'));
+                if (viewEl) viewEl.classList.remove('active-view');
+                if (btnEl) btnEl.classList.remove('active');
+            });
+
+            if (tab === 'tracking') {
+                document.getElementById('viewTracking').classList.add('active-view');
+                document.getElementById('navBtnTracking').classList.add('active');
+                if (map) {
+                    setTimeout(() => { map.invalidateSize(); }, 200);
+                }
+            } else if (tab === 'booking') {
+                document.getElementById('viewBooking').classList.add('active-view');
+                document.getElementById('navBtnBooking').classList.add('active');
+            } else if (tab === 'my-bookings') {
+                document.getElementById('viewMyBookings').classList.add('active-view');
+                document.getElementById('navBtnMyBookings').classList.add('active');
+                loadMyBookings();
+            }
+        }
+
+        // Populate Station Dropdowns/Datalists
+        function populateStationDatalists() {
+            const list = document.getElementById("stationOptions");
+            if (!list) return;
+
+            const seen = new Set();
+            list.innerHTML = "";
+
+            BUILTIN_TRAINS.forEach(train => {
+                train.stations.forEach(st => {
+                    if (!seen.has(st.code)) {
+                        seen.add(st.code);
+                        const opt = document.createElement("option");
+                        opt.value = `${st.name} (${st.code})`;
+                        list.appendChild(opt);
+                    }
+                });
+            });
+        }
+
+        function setupDefaultJourneyDate() {
+            const dateInput = document.getElementById("bookDate");
+            if (!dateInput) return;
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateStr = tomorrow.toISOString().split("T")[0];
+            dateInput.value = dateStr;
+            dateInput.min = new Date().toISOString().split("T")[0];
+        }
+
+        // =========================================================
+        // LEAFLET MAP & SIMULATION ENGINE
+        // =========================================================
+        function initLeafletMap() {
+            map = L.map('map', {
+                zoomControl: true,
+                scrollWheelZoom: true
+            }).setView([22.5, 76.5], 6);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+
+        function loadTrain(train) {
+            currentTrain = train;
+            simProgress = 10;
+
+            document.getElementById("dispTrainNumber").textContent = train.trainNumber;
+            document.getElementById("dispTrainName").textContent = train.trainName;
+            document.getElementById("dispTrainRoute").textContent = `${train.from} → ${train.to}`;
+            document.getElementById("timelineStopCount").textContent = `${train.stations.length} Stations`;
+
+            drawMapRoute(train);
+            renderTimeline(train);
+            updateSimState();
+        }
+
+        function drawMapRoute(train) {
+            if (routePolyline) map.removeLayer(routePolyline);
+            stationMarkers.forEach(m => map.removeLayer(m));
+            stationMarkers = [];
+
+            const latLngs = train.stations.map(st => [st.lat, st.lng]);
+
+            routePolyline = L.polyline(latLngs, {
+                color: '#0284c7',
+                weight: 5,
+                opacity: 0.85,
+                dashArray: '8, 8',
+                lineCap: 'round'
+            }).addTo(map);
+
+            train.stations.forEach((st, idx) => {
+                const isTerminal = (idx === 0 || idx === train.stations.length - 1);
+                const iconHtml = `<div class="station-leaflet-icon ${isTerminal ? 'terminal' : ''}">${isTerminal ? '★' : (idx + 1)}</div>`;
+
+                const customIcon = L.divIcon({
+                    html: iconHtml,
+                    className: 'custom-station-icon',
+                    iconSize: isTerminal ? [26, 26] : [22, 22],
+                    iconAnchor: isTerminal ? [13, 13] : [11, 11]
+                });
+
+                const marker = L.marker([st.lat, st.lng], { icon: customIcon }).addTo(map);
+                marker.bindPopup(`
             <div style="font-family:sans-serif; min-width:140px;">
                 <strong style="color:#0b1f3a; font-size:14px;">${st.name} (${st.code})</strong><br>
                 <small style="color:#64748b;">Stop #${idx + 1} &bull; ${st.distanceKm} km</small><br>
@@ -2177,58 +2479,58 @@ function drawMapRoute(train) {
                 </div>
             </div>
         `);
-        stationMarkers.push(marker);
-    });
+                stationMarkers.push(marker);
+            });
 
-    if (!trainMarker) {
-        const trainIcon = L.divIcon({
-            html: '<div class="train-leaflet-icon">🚆</div>',
-            className: 'custom-train-marker',
-            iconSize: [34, 34],
-            iconAnchor: [17, 17]
-        });
-        trainMarker = L.marker(latLngs[0], { icon: trainIcon, zIndexOffset: 1000 }).addTo(map);
-    }
+            if (!trainMarker) {
+                const trainIcon = L.divIcon({
+                    html: '<div class="train-leaflet-icon">🚆</div>',
+                    className: 'custom-train-marker',
+                    iconSize: [34, 34],
+                    iconAnchor: [17, 17]
+                });
+                trainMarker = L.marker(latLngs[0], { icon: trainIcon, zIndexOffset: 1000 }).addTo(map);
+            }
 
-    map.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
-}
+            map.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+        }
 
-function calculatePosition(progress) {
-    const stations = currentTrain.stations;
-    const totalSegments = stations.length - 1;
+        function calculatePosition(progress) {
+            const stations = currentTrain.stations;
+            const totalSegments = stations.length - 1;
 
-    const fraction = (progress / 100) * totalSegments;
-    const currentIdx = Math.min(Math.floor(fraction), totalSegments - 1);
-    const nextIdx = Math.min(currentIdx + 1, stations.length - 1);
-    const subFraction = fraction - currentIdx;
+            const fraction = (progress / 100) * totalSegments;
+            const currentIdx = Math.min(Math.floor(fraction), totalSegments - 1);
+            const nextIdx = Math.min(currentIdx + 1, stations.length - 1);
+            const subFraction = fraction - currentIdx;
 
-    const curSt = stations[currentIdx];
-    const nxtSt = stations[nextIdx];
+            const curSt = stations[currentIdx];
+            const nxtSt = stations[nextIdx];
 
-    const lat = curSt.lat + (nxtSt.lat - curSt.lat) * subFraction;
-    const lng = curSt.lng + (nxtSt.lng - curSt.lng) * subFraction;
-    const coveredKm = Math.round(curSt.distanceKm + (nxtSt.distanceKm - curSt.distanceKm) * subFraction);
+            const lat = curSt.lat + (nxtSt.lat - curSt.lat) * subFraction;
+            const lng = curSt.lng + (nxtSt.lng - curSt.lng) * subFraction;
+            const coveredKm = Math.round(curSt.distanceKm + (nxtSt.distanceKm - curSt.distanceKm) * subFraction);
 
-    return {
-        lat,
-        lng,
-        currentIdx,
-        nextIdx,
-        currentStation: curSt,
-        nextStation: nxtSt,
-        coveredKm
-    };
-}
+            return {
+                lat,
+                lng,
+                currentIdx,
+                nextIdx,
+                currentStation: curSt,
+                nextStation: nxtSt,
+                coveredKm
+            };
+        }
 
-function updateSimState() {
-    const state = calculatePosition(simProgress);
+        function updateSimState() {
+            const state = calculatePosition(simProgress);
 
-    document.getElementById("simProgressSlider").value = simProgress;
-    document.getElementById("sliderPercent").textContent = `${Math.round(simProgress)}%`;
+            document.getElementById("simProgressSlider").value = simProgress;
+            document.getElementById("sliderPercent").textContent = `${Math.round(simProgress)}%`;
 
-    if (trainMarker) {
-        trainMarker.setLatLng([state.lat, state.lng]);
-        trainMarker.setPopupContent(`
+            if (trainMarker) {
+                trainMarker.setLatLng([state.lat, state.lng]);
+                trainMarker.setPopupContent(`
             <div style="font-family:sans-serif; min-width:170px;">
                 <b style="color:#0b1f3a;">${currentTrain.trainNumber} - ${currentTrain.trainName}</b><br>
                 <span style="color:#d97706; font-size:12px; font-weight:700;">SIMULATED LIVE POSITION</span><br>
@@ -2236,36 +2538,36 @@ function updateSimState() {
                 <small style="color:#64748b;">Next: ${state.nextStation.name}</small>
             </div>
         `);
-    }
+            }
 
-    document.getElementById("metricCurrentStation").textContent = `${state.currentStation.name} (${state.currentStation.code})`;
-    document.getElementById("metricDistance").textContent = `${state.coveredKm} km covered of ${currentTrain.totalDistanceKm} km`;
+            document.getElementById("metricCurrentStation").textContent = `${state.currentStation.name} (${state.currentStation.code})`;
+            document.getElementById("metricDistance").textContent = `${state.coveredKm} km covered of ${currentTrain.totalDistanceKm} km`;
 
-    document.getElementById("metricNextStation").textContent = `${state.nextStation.name} (${state.nextStation.code})`;
-    document.getElementById("metricNextPlatform").textContent = `Platform ${state.nextStation.platform} • ${Math.max(0, state.nextStation.distanceKm - state.coveredKm)} km ahead`;
+            document.getElementById("metricNextStation").textContent = `${state.nextStation.name} (${state.nextStation.code})`;
+            document.getElementById("metricNextPlatform").textContent = `Platform ${state.nextStation.platform} • ${Math.max(0, state.nextStation.distanceKm - state.coveredKm)} km ahead`;
 
-    document.getElementById("metricEta").textContent = `${state.nextStation.scheduledArrival} hrs`;
-    const speed = simProgress >= 100 ? 0 : Math.round(currentTrain.avgSpeedKmh + Math.sin(simProgress) * 7);
-    document.getElementById("metricSpeed").textContent = `Speed: ~${speed} km/h`;
+            document.getElementById("metricEta").textContent = `${state.nextStation.scheduledArrival} hrs`;
+            const speed = simProgress >= 100 ? 0 : Math.round(currentTrain.avgSpeedKmh + Math.sin(simProgress) * 7);
+            document.getElementById("metricSpeed").textContent = `Speed: ~${speed} km/h`;
 
-    const delayText = currentTrain.demoDelayMinutes === 0 ? "On Time" : `${currentTrain.demoDelayMinutes} min delay`;
-    const delayEl = document.getElementById("metricDelay");
-    delayEl.textContent = delayText;
-    delayEl.style.color = currentTrain.demoDelayMinutes === 0 ? "var(--accent-green)" : "#d97706";
+            const delayText = currentTrain.demoDelayMinutes === 0 ? "On Time" : `${currentTrain.demoDelayMinutes} min delay`;
+            const delayEl = document.getElementById("metricDelay");
+            delayEl.textContent = delayText;
+            delayEl.style.color = currentTrain.demoDelayMinutes === 0 ? "var(--accent-green)" : "#d97706";
 
-    updateTimelineClasses(state.currentIdx);
-}
+            updateTimelineClasses(state.currentIdx);
+        }
 
-function renderTimeline(train) {
-    const listEl = document.getElementById("timelineList");
-    listEl.innerHTML = "";
+        function renderTimeline(train) {
+            const listEl = document.getElementById("timelineList");
+            listEl.innerHTML = "";
 
-    train.stations.forEach((st, idx) => {
-        const item = document.createElement("div");
-        item.className = "timeline-item";
-        item.id = `timeline-st-${idx}`;
+            train.stations.forEach((st, idx) => {
+                const item = document.createElement("div");
+                item.className = "timeline-item";
+                item.id = `timeline-st-${idx}`;
 
-        item.innerHTML = `
+                item.innerHTML = `
             <div class="timeline-dot">${idx + 1}</div>
             <div class="timeline-body">
                 <div class="timeline-title">
@@ -2283,359 +2585,359 @@ function renderTimeline(train) {
             </div>
         `;
 
-        item.style.cursor = "pointer";
-        item.onclick = () => {
-            const pct = (idx / (train.stations.length - 1)) * 100;
-            simProgress = pct;
-            updateSimState();
-        };
+                item.style.cursor = "pointer";
+                item.onclick = () => {
+                    const pct = (idx / (train.stations.length - 1)) * 100;
+                    simProgress = pct;
+                    updateSimState();
+                };
 
-        listEl.appendChild(item);
-    });
-}
-
-function updateTimelineClasses(currentIdx) {
-    currentTrain.stations.forEach((_, idx) => {
-        const el = document.getElementById(`timeline-st-${idx}`);
-        if (!el) return;
-
-        el.classList.remove("passed", "current");
-        if (idx < currentIdx) {
-            el.classList.add("passed");
-        } else if (idx === currentIdx) {
-            el.classList.add("current");
+                listEl.appendChild(item);
+            });
         }
-    });
-}
 
-function startSimTimer() {
-    stopSimTimer();
-    simTimer = setInterval(() => {
-        if (!isPlaying) return;
-        simProgress += 1.8;
-        if (simProgress >= 100) {
-            simProgress = 100;
-            isPlaying = false;
+        function updateTimelineClasses(currentIdx) {
+            currentTrain.stations.forEach((_, idx) => {
+                const el = document.getElementById(`timeline-st-${idx}`);
+                if (!el) return;
+
+                el.classList.remove("passed", "current");
+                if (idx < currentIdx) {
+                    el.classList.add("passed");
+                } else if (idx === currentIdx) {
+                    el.classList.add("current");
+                }
+            });
+        }
+
+        function startSimTimer() {
+            stopSimTimer();
+            simTimer = setInterval(() => {
+                if (!isPlaying) return;
+                simProgress += 1.8;
+                if (simProgress >= 100) {
+                    simProgress = 100;
+                    isPlaying = false;
+                    updatePlayButtonUI();
+                }
+                updateSimState();
+            }, simIntervalMs);
+        }
+
+        function stopSimTimer() {
+            if (simTimer) {
+                clearInterval(simTimer);
+                simTimer = null;
+            }
+        }
+
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            if (isPlaying && simProgress >= 100) {
+                simProgress = 0;
+            }
             updatePlayButtonUI();
         }
-        updateSimState();
-    }, simIntervalMs);
-}
 
-function stopSimTimer() {
-    if (simTimer) {
-        clearInterval(simTimer);
-        simTimer = null;
-    }
-}
+        function updatePlayButtonUI() {
+            const playIcon = document.getElementById("playIcon");
+            const playText = document.getElementById("playText");
+            const statusText = document.getElementById("simStatusText");
 
-function togglePlayPause() {
-    isPlaying = !isPlaying;
-    if (isPlaying && simProgress >= 100) {
-        simProgress = 0;
-    }
-    updatePlayButtonUI();
-}
-
-function updatePlayButtonUI() {
-    const playIcon = document.getElementById("playIcon");
-    const playText = document.getElementById("playText");
-    const statusText = document.getElementById("simStatusText");
-
-    if (isPlaying) {
-        playIcon.innerHTML = "&#9646;&#9646;";
-        playText.textContent = "Pause";
-        statusText.textContent = `Simulation Active (Auto-updating every ${simIntervalMs / 1000}s)`;
-    } else {
-        playIcon.innerHTML = "&#9654;";
-        playText.textContent = "Resume";
-        statusText.textContent = "Simulation Paused";
-    }
-}
-
-function resetSimulation() {
-    simProgress = 0;
-    isPlaying = true;
-    updatePlayButtonUI();
-    updateSimState();
-}
-
-function stepForward() {
-    simProgress = Math.min(100, simProgress + 5);
-    updateSimState();
-}
-
-function onSliderScrub(val) {
-    simProgress = parseFloat(val);
-    updateSimState();
-}
-
-function setSimSpeed(mult, intervalMs) {
-    simIntervalMs = intervalMs;
-    ['spd1', 'spd2', 'spd4'].forEach(id => document.getElementById(id).classList.remove('active'));
-
-    if (mult === 1) document.getElementById('spd1').classList.add('active');
-    if (mult === 2) document.getElementById('spd2').classList.add('active');
-    if (mult === 4) document.getElementById('spd4').classList.add('active');
-
-    document.getElementById("speedLabel").textContent = `${intervalMs / 1000}s`;
-    startSimTimer();
-    updatePlayButtonUI();
-}
-
-function switchSearchTab(tab) {
-    currentTrackingSearchTab = tab;
-    const tabTrain = document.getElementById("tabTrain");
-    const tabStation = document.getElementById("tabStation");
-    const input = document.getElementById("trackingSearchInput");
-
-    if (tab === 'train') {
-        tabTrain.classList.add("active");
-        tabStation.classList.remove("active");
-        input.placeholder = "Enter train number (e.g. 12951) or name (e.g. Rajdhani)";
-    } else {
-        tabStation.classList.add("active");
-        tabTrain.classList.remove("active");
-        input.placeholder = "Enter station name (e.g. Jalgaon, New Delhi, Bhopal) or code (e.g. JL, NDLS)";
-    }
-}
-
-function loadTrainDirect(trainNo) {
-    const match = BUILTIN_TRAINS.find(t => t.trainNumber === trainNo);
-    if (match) {
-        loadTrain(match);
-        closeStationResults();
-        switchMainTab('tracking');
-    }
-}
-
-async function handleTrainTrackingSearch(event) {
-    event.preventDefault();
-    const query = document.getElementById("trackingSearchInput").value.trim();
-    if (!query) {
-        alert("Please enter a train name, number, or station to search.");
-        return;
-    }
-
-    if (currentTrackingSearchTab === 'train') {
-        const q = query.toLowerCase();
-        const match = BUILTIN_TRAINS.find(t =>
-            t.trainNumber === q ||
-            t.trainName.toLowerCase().includes(q) ||
-            t.trainNumber.includes(q)
-        );
-
-        if (match) {
-            loadTrain(match);
-            closeStationResults();
-        } else {
-            alert(`No simulation train found matching "${query}".\n\nTry 12951, 22436, 12002, 11077, 12301, or 12626.`);
+            if (isPlaying) {
+                playIcon.innerHTML = "&#9646;&#9646;";
+                playText.textContent = "Pause";
+                statusText.textContent = `Simulation Active (Auto-updating every ${simIntervalMs / 1000}s)`;
+            } else {
+                playIcon.innerHTML = "&#9654;";
+                playText.textContent = "Resume";
+                statusText.textContent = "Simulation Paused";
+            }
         }
-    } else {
-        searchStationAction(query);
-    }
-}
 
-function searchStationAction(query) {
-    const q = query.toLowerCase();
-    const results = BUILTIN_TRAINS.filter(t =>
-        t.stations.some(st =>
-            st.code.toLowerCase() === q ||
-            st.name.toLowerCase().includes(q)
-        )
-    );
+        function resetSimulation() {
+            simProgress = 0;
+            isPlaying = true;
+            updatePlayButtonUI();
+            updateSimState();
+        }
 
-    if (results.length === 0) {
-        alert(`No demo trains found stopping at station "${query}".\n\nTry Jalgaon (JL), New Delhi (NDLS), Mumbai, Bhopal, Kanpur, Surat, or Pune.`);
-        return;
-    }
+        function stepForward() {
+            simProgress = Math.min(100, simProgress + 5);
+            updateSimState();
+        }
 
-    const box = document.getElementById("stationResultsBox");
-    const heading = document.getElementById("stationSearchHeading");
-    const grid = document.getElementById("stationTrainsGrid");
+        function onSliderScrub(val) {
+            simProgress = parseFloat(val);
+            updateSimState();
+        }
 
-    heading.textContent = `"${query.toUpperCase()}" (${results.length} train${results.length > 1 ? 's' : ''} found)`;
-    grid.innerHTML = "";
+        function setSimSpeed(mult, intervalMs) {
+            simIntervalMs = intervalMs;
+            ['spd1', 'spd2', 'spd4'].forEach(id => document.getElementById(id).classList.remove('active'));
 
-    results.forEach(t => {
-        const card = document.createElement("div");
-        card.className = "station-train-card";
-        card.innerHTML = `
+            if (mult === 1) document.getElementById('spd1').classList.add('active');
+            if (mult === 2) document.getElementById('spd2').classList.add('active');
+            if (mult === 4) document.getElementById('spd4').classList.add('active');
+
+            document.getElementById("speedLabel").textContent = `${intervalMs / 1000}s`;
+            startSimTimer();
+            updatePlayButtonUI();
+        }
+
+        function switchSearchTab(tab) {
+            currentTrackingSearchTab = tab;
+            const tabTrain = document.getElementById("tabTrain");
+            const tabStation = document.getElementById("tabStation");
+            const input = document.getElementById("trackingSearchInput");
+
+            if (tab === 'train') {
+                tabTrain.classList.add("active");
+                tabStation.classList.remove("active");
+                input.placeholder = "Enter train number (e.g. 12951) or name (e.g. Rajdhani)";
+            } else {
+                tabStation.classList.add("active");
+                tabTrain.classList.remove("active");
+                input.placeholder = "Enter station name (e.g. Jalgaon, New Delhi, Bhopal) or code (e.g. JL, NDLS)";
+            }
+        }
+
+        function loadTrainDirect(trainNo) {
+            const match = BUILTIN_TRAINS.find(t => t.trainNumber === trainNo);
+            if (match) {
+                loadTrain(match);
+                closeStationResults();
+                switchMainTab('tracking');
+            }
+        }
+
+        async function handleTrainTrackingSearch(event) {
+            event.preventDefault();
+            const query = document.getElementById("trackingSearchInput").value.trim();
+            if (!query) {
+                alert("Please enter a train name, number, or station to search.");
+                return;
+            }
+
+            if (currentTrackingSearchTab === 'train') {
+                const q = query.toLowerCase();
+                const match = BUILTIN_TRAINS.find(t =>
+                    t.trainNumber === q ||
+                    t.trainName.toLowerCase().includes(q) ||
+                    t.trainNumber.includes(q)
+                );
+
+                if (match) {
+                    loadTrain(match);
+                    closeStationResults();
+                } else {
+                    alert(`No simulation train found matching "${query}".\n\nTry 12951, 22436, 12002, 11077, 12301, or 12626.`);
+                }
+            } else {
+                searchStationAction(query);
+            }
+        }
+
+        function searchStationAction(query) {
+            const q = query.toLowerCase();
+            const results = BUILTIN_TRAINS.filter(t =>
+                t.stations.some(st =>
+                    st.code.toLowerCase() === q ||
+                    st.name.toLowerCase().includes(q)
+                )
+            );
+
+            if (results.length === 0) {
+                alert(`No demo trains found stopping at station "${query}".\n\nTry Jalgaon (JL), New Delhi (NDLS), Mumbai, Bhopal, Kanpur, Surat, or Pune.`);
+                return;
+            }
+
+            const box = document.getElementById("stationResultsBox");
+            const heading = document.getElementById("stationSearchHeading");
+            const grid = document.getElementById("stationTrainsGrid");
+
+            heading.textContent = `"${query.toUpperCase()}" (${results.length} train${results.length > 1 ? 's' : ''} found)`;
+            grid.innerHTML = "";
+
+            results.forEach(t => {
+                const card = document.createElement("div");
+                card.className = "station-train-card";
+                card.innerHTML = `
             <h4>🚆 ${t.trainNumber} - ${t.trainName}</h4>
             <p>${t.from} &rarr; ${t.to}</p>
             <div style="margin-top:8px; font-size:12px; font-weight:700; color:var(--accent-blue);">
                 Click to Track This Train &rarr;
             </div>
         `;
-        card.onclick = () => {
-            loadTrainDirect(t.trainNumber);
-        };
-        grid.appendChild(card);
-    });
+                card.onclick = () => {
+                    loadTrainDirect(t.trainNumber);
+                };
+                grid.appendChild(card);
+            });
 
-    box.classList.add("show");
-    box.scrollIntoView({ behavior: 'smooth' });
-}
-
-function closeStationResults() {
-    const box = document.getElementById("stationResultsBox");
-    box.classList.remove("show");
-}
-
-// =========================================================
-// TICKET BOOKING SYSTEM
-// =========================================================
-
-function swapBookingStations() {
-    const fromInput = document.getElementById("bookFromStation");
-    const toInput = document.getElementById("bookToStation");
-    const tmp = fromInput.value;
-    fromInput.value = toInput.value;
-    toInput.value = tmp;
-}
-
-function quickFillRoute(from, to) {
-    document.getElementById("bookFromStation").value = from;
-    document.getElementById("bookToStation").value = to;
-    document.getElementById("ticketSearchForm").dispatchEvent(new Event('submit'));
-}
-
-function prefillBookingForTrain(train) {
-    switchMainTab('booking');
-    document.getElementById("bookFromStation").value = train.stations[0].name;
-    document.getElementById("bookToStation").value = train.stations[train.stations.length - 1].name;
-    document.getElementById("ticketSearchForm").dispatchEvent(new Event('submit'));
-}
-
-function cleanStationQuery(str) {
-    if (!str) return "";
-    // extract code inside brackets if present e.g. "Mumbai Central (MMCT)" -> "MMCT"
-    const m = str.match(/\(([^)]+)\)/);
-    if (m) return m[1].trim();
-    return str.trim();
-}
-
-function runInitialBookingSearch() {
-    quickFillRoute("Mumbai Central", "New Delhi");
-}
-
-async function handleTicketSearch(event) {
-    if (event) event.preventDefault();
-
-    const fromRaw = document.getElementById("bookFromStation").value.trim();
-    const toRaw = document.getElementById("bookToStation").value.trim();
-    const date = document.getElementById("bookDate").value;
-    const travelClass = document.getElementById("bookTravelClass").value;
-
-    if (!fromRaw || !toRaw) {
-        alert("Please enter both From and To stations.");
-        return;
-    }
-
-    const fromCode = cleanStationQuery(fromRaw).toLowerCase();
-    const toCode = cleanStationQuery(toRaw).toLowerCase();
-
-    if (fromCode === toCode) {
-        alert("Origin and Destination stations cannot be the same!");
-        return;
-    }
-
-    let trainMatches = [];
-
-    // Try server search endpoint first
-    try {
-        const resp = await fetch(`/api/search-trains?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(date)}&travelClass=${encodeURIComponent(travelClass)}`);
-        if (resp.ok) {
-            const json = await resp.json();
-            if (json.success && json.data) {
-                trainMatches = json.data;
-            }
+            box.classList.add("show");
+            box.scrollIntoView({ behavior: 'smooth' });
         }
-    } catch (err) {
-        // Fallback to client-side logic
-    }
 
-    // Client fallback if server not reachable or offline
-    if (trainMatches.length === 0) {
-        trainMatches = findClientTrainsBetweenStations(fromCode, toCode, travelClass, date);
-    }
+        function closeStationResults() {
+            const box = document.getElementById("stationResultsBox");
+            box.classList.remove("show");
+        }
 
-    renderBookingResults(trainMatches, fromRaw, toRaw, date);
-}
+        // =========================================================
+        // TICKET BOOKING SYSTEM
+        // =========================================================
 
-function findClientTrainsBetweenStations(fromQuery, toQuery, travelClass, journeyDate) {
-    const fromQ = fromQuery.toLowerCase();
-    const toQ = toQuery.toLowerCase();
-    const results = [];
+        function swapBookingStations() {
+            const fromInput = document.getElementById("bookFromStation");
+            const toInput = document.getElementById("bookToStation");
+            const tmp = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = tmp;
+        }
 
-    BUILTIN_TRAINS.forEach(train => {
-        const fromIdx = train.stations.findIndex(st =>
-            st.code.toLowerCase() === fromQ || st.name.toLowerCase().includes(fromQ)
-        );
-        const toIdx = train.stations.findIndex(st =>
-            st.code.toLowerCase() === toQ || st.name.toLowerCase().includes(toQ)
-        );
+        function quickFillRoute(from, to) {
+            document.getElementById("bookFromStation").value = from;
+            document.getElementById("bookToStation").value = to;
+            document.getElementById("ticketSearchForm").dispatchEvent(new Event('submit'));
+        }
 
-        if (fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx) {
-            const fromSt = train.stations[fromIdx];
-            const toSt = train.stations[toIdx];
-            const dist = toSt.distanceKm - fromSt.distanceKm;
+        function prefillBookingForTrain(train) {
+            switchMainTab('booking');
+            document.getElementById("bookFromStation").value = train.stations[0].name;
+            document.getElementById("bookToStation").value = train.stations[train.stations.length - 1].name;
+            document.getElementById("ticketSearchForm").dispatchEvent(new Event('submit'));
+        }
 
-            let classes = train.availableClasses;
-            if (travelClass && travelClass !== "ALL" && classes.includes(travelClass)) {
-                classes = [travelClass];
-            } else if (travelClass && travelClass !== "ALL") {
+        function cleanStationQuery(str) {
+            if (!str) return "";
+            // extract code inside brackets if present e.g. "Mumbai Central (MMCT)" -> "MMCT"
+            const m = str.match(/\(([^)]+)\)/);
+            if (m) return m[1].trim();
+            return str.trim();
+        }
+
+        function runInitialBookingSearch() {
+            quickFillRoute("Mumbai Central", "New Delhi");
+        }
+
+        async function handleTicketSearch(event) {
+            if (event) event.preventDefault();
+
+            const fromRaw = document.getElementById("bookFromStation").value.trim();
+            const toRaw = document.getElementById("bookToStation").value.trim();
+            const date = document.getElementById("bookDate").value;
+            const travelClass = document.getElementById("bookTravelClass").value;
+
+            if (!fromRaw || !toRaw) {
+                alert("Please enter both From and To stations.");
                 return;
             }
 
-            const classFares = classes.map(cls => {
-                const cfg = CLASS_CONFIG[cls] || CLASS_CONFIG["SL"];
-                const baseFare = Math.max(cfg.minFare, Math.round(dist * cfg.ratePerKm));
-                const resFee = cfg.resFee;
-                const superfast = 45;
-                const gst = Math.round((baseFare + resFee + superfast) * 0.05);
-                const total = baseFare + resFee + superfast + gst;
+            const fromCode = cleanStationQuery(fromRaw).toLowerCase();
+            const toCode = cleanStationQuery(toRaw).toLowerCase();
 
-                return {
-                    classType: cls,
-                    className: cfg.name,
-                    baseFare,
-                    reservationFee: resFee,
-                    superfastCharge: superfast,
-                    gst,
-                    totalFare: total,
-                    availability: { status: "AVAILABLE", badge: `AVAILABLE ${Math.floor(Math.random()*40)+12}`, color: "#16a34a" }
-                };
-            });
+            if (fromCode === toCode) {
+                alert("Origin and Destination stations cannot be the same!");
+                return;
+            }
 
-            results.push({
-                trainNumber: train.trainNumber,
-                trainName: train.trainName,
-                trainType: train.trainType,
-                fromStation: fromSt,
-                toStation: toSt,
-                departureTime: fromSt.scheduledDeparture,
-                arrivalTime: toSt.scheduledArrival,
-                distanceKm: dist,
-                classes: classFares
-            });
+            let trainMatches = [];
+
+            // Try server search endpoint first
+            try {
+                const resp = await fetch(`/api/search-trains?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(date)}&travelClass=${encodeURIComponent(travelClass)}`);
+                if (resp.ok) {
+                    const json = await resp.json();
+                    if (json.success && json.data) {
+                        trainMatches = json.data;
+                    }
+                }
+            } catch (err) {
+                // Fallback to client-side logic
+            }
+
+            // Client fallback if server not reachable or offline
+            if (trainMatches.length === 0) {
+                trainMatches = findClientTrainsBetweenStations(fromCode, toCode, travelClass, date);
+            }
+
+            renderBookingResults(trainMatches, fromRaw, toRaw, date);
         }
-    });
 
-    return results;
-}
+        function findClientTrainsBetweenStations(fromQuery, toQuery, travelClass, journeyDate) {
+            const fromQ = fromQuery.toLowerCase();
+            const toQ = toQuery.toLowerCase();
+            const results = [];
 
-function renderBookingResults(trains, fromStr, toStr, date) {
-    const listEl = document.getElementById("bookingTrainCardsList");
-    const heading = document.getElementById("bookingResultsHeading");
-    const subheading = document.getElementById("bookingResultsSubheading");
+            BUILTIN_TRAINS.forEach(train => {
+                const fromIdx = train.stations.findIndex(st =>
+                    st.code.toLowerCase() === fromQ || st.name.toLowerCase().includes(fromQ)
+                );
+                const toIdx = train.stations.findIndex(st =>
+                    st.code.toLowerCase() === toQ || st.name.toLowerCase().includes(toQ)
+                );
 
-    heading.textContent = `${fromStr} → ${toStr}`;
-    subheading.textContent = `Date: ${date} • ${trains.length} Train${trains.length === 1 ? '' : 's'} Found`;
-    listEl.innerHTML = "";
+                if (fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx) {
+                    const fromSt = train.stations[fromIdx];
+                    const toSt = train.stations[toIdx];
+                    const dist = toSt.distanceKm - fromSt.distanceKm;
 
-    if (trains.length === 0) {
-        listEl.innerHTML = `
+                    let classes = train.availableClasses;
+                    if (travelClass && travelClass !== "ALL" && classes.includes(travelClass)) {
+                        classes = [travelClass];
+                    } else if (travelClass && travelClass !== "ALL") {
+                        return;
+                    }
+
+                    const classFares = classes.map(cls => {
+                        const cfg = CLASS_CONFIG[cls] || CLASS_CONFIG["SL"];
+                        const baseFare = Math.max(cfg.minFare, Math.round(dist * cfg.ratePerKm));
+                        const resFee = cfg.resFee;
+                        const superfast = 45;
+                        const gst = Math.round((baseFare + resFee + superfast) * 0.05);
+                        const total = baseFare + resFee + superfast + gst;
+
+                        return {
+                            classType: cls,
+                            className: cfg.name,
+                            baseFare,
+                            reservationFee: resFee,
+                            superfastCharge: superfast,
+                            gst,
+                            totalFare: total,
+                            availability: { status: "AVAILABLE", badge: `AVAILABLE ${Math.floor(Math.random() * 40) + 12}`, color: "#16a34a" }
+                        };
+                    });
+
+                    results.push({
+                        trainNumber: train.trainNumber,
+                        trainName: train.trainName,
+                        trainType: train.trainType,
+                        fromStation: fromSt,
+                        toStation: toSt,
+                        departureTime: fromSt.scheduledDeparture,
+                        arrivalTime: toSt.scheduledArrival,
+                        distanceKm: dist,
+                        classes: classFares
+                    });
+                }
+            });
+
+            return results;
+        }
+
+        function renderBookingResults(trains, fromStr, toStr, date) {
+            const listEl = document.getElementById("bookingTrainCardsList");
+            const heading = document.getElementById("bookingResultsHeading");
+            const subheading = document.getElementById("bookingResultsSubheading");
+
+            heading.textContent = `${fromStr} → ${toStr}`;
+            subheading.textContent = `Date: ${date} • ${trains.length} Train${trains.length === 1 ? '' : 's'} Found`;
+            listEl.innerHTML = "";
+
+            if (trains.length === 0) {
+                listEl.innerHTML = `
             <div style="background:white; border-radius:14px; padding:32px; text-align:center; border:1px solid var(--border-color); color:var(--text-muted);">
                 <div style="font-size:36px; margin-bottom:10px;">🔍</div>
                 <h3 style="color:var(--primary); margin-bottom:8px;">No Direct Trains Found</h3>
@@ -2643,14 +2945,14 @@ function renderBookingResults(trains, fromStr, toStr, date) {
                 <p style="margin-top:10px; font-size:13px;">Try popular routes: <b>Mumbai to New Delhi</b>, <b>New Delhi to Varanasi</b>, <b>Pune to Jalgaon</b>, or <b>Howrah to New Delhi</b>.</p>
             </div>
         `;
-        return;
-    }
+                return;
+            }
 
-    trains.forEach(t => {
-        const card = document.createElement("div");
-        card.className = "train-result-card";
+            trains.forEach(t => {
+                const card = document.createElement("div");
+                card.className = "train-result-card";
 
-        const classesHtml = t.classes.map(cls => `
+                const classesHtml = t.classes.map(cls => `
             <div class="class-box" onclick='openPassengerModal(${JSON.stringify(t)}, ${JSON.stringify(cls)})'>
                 <div class="class-box-top">
                     <span class="class-badge">${cls.classType}</span>
@@ -2663,7 +2965,7 @@ function renderBookingResults(trains, fromStr, toStr, date) {
             </div>
         `).join("");
 
-        card.innerHTML = `
+                card.innerHTML = `
             <div class="result-train-header">
                 <div class="result-train-title">
                     <span class="result-train-no">${t.trainNumber}</span>
@@ -2695,38 +2997,38 @@ function renderBookingResults(trains, fromStr, toStr, date) {
             </div>
         `;
 
-        listEl.appendChild(card);
-    });
-}
+                listEl.appendChild(card);
+            });
+        }
 
-// Open Passenger Details Modal
-function openPassengerModal(trainObj, classObj) {
-    selectedBookingTrain = trainObj;
-    selectedBookingClass = classObj;
-    selectedBookingFare = classObj.totalFare;
-    selectedFromStation = trainObj.fromStation;
-    selectedToStation = trainObj.toStation;
+        // Open Passenger Details Modal
+        function openPassengerModal(trainObj, classObj) {
+            selectedBookingTrain = trainObj;
+            selectedBookingClass = classObj;
+            selectedBookingFare = classObj.totalFare;
+            selectedFromStation = trainObj.fromStation;
+            selectedToStation = trainObj.toStation;
 
-    const count = parseInt(document.getElementById("bookPassengerCount").value, 10) || 1;
+            const count = parseInt(document.getElementById("bookPassengerCount").value, 10) || 1;
 
-    document.getElementById("modalTrainTitle").textContent = `${trainObj.trainNumber} - ${trainObj.trainName}`;
-    document.getElementById("modalTrainSub").textContent = `${trainObj.fromStation.name} (${trainObj.fromStation.code}) → ${trainObj.toStation.name} (${trainObj.toStation.code}) • Date: ${document.getElementById("bookDate").value}`;
-    document.getElementById("modalSelectedClass").textContent = `Class: ${classObj.className}`;
-    document.getElementById("modalClassFare").textContent = `₹ ${classObj.totalFare} per person`;
+            document.getElementById("modalTrainTitle").textContent = `${trainObj.trainNumber} - ${trainObj.trainName}`;
+            document.getElementById("modalTrainSub").textContent = `${trainObj.fromStation.name} (${trainObj.fromStation.code}) → ${trainObj.toStation.name} (${trainObj.toStation.code}) • Date: ${document.getElementById("bookDate").value}`;
+            document.getElementById("modalSelectedClass").textContent = `Class: ${classObj.className}`;
+            document.getElementById("modalClassFare").textContent = `₹ ${classObj.totalFare} per person`;
 
-    const totalAmt = classObj.totalFare * count;
-    document.getElementById("modalTotalAmount").textContent = `₹ ${totalAmt.toLocaleString('en-IN')}`;
+            const totalAmt = classObj.totalFare * count;
+            document.getElementById("modalTotalAmount").textContent = `₹ ${totalAmt.toLocaleString('en-IN')}`;
 
-    // Render passenger rows
-    const container = document.getElementById("passengerInputsContainer");
-    container.innerHTML = "";
+            // Render passenger rows
+            const container = document.getElementById("passengerInputsContainer");
+            container.innerHTML = "";
 
-    const defaultNames = ["Bhavi Sharma", "Rahul Verma", "Pooja Patel", "Amit Singh", "Sneha Joshi", "Vikas Rao"];
+            const defaultNames = ["Bhavi Sharma", "Rahul Verma", "Pooja Patel", "Amit Singh", "Sneha Joshi", "Vikas Rao"];
 
-    for (let i = 1; i <= count; i++) {
-        const row = document.createElement("div");
-        row.className = "passenger-row";
-        row.innerHTML = `
+            for (let i = 1; i <= count; i++) {
+                const row = document.createElement("div");
+                row.className = "passenger-row";
+                row.innerHTML = `
             <div class="passenger-row-header">
                 <span>Passenger #${i}</span>
                 <span>Adult / General</span>
@@ -2734,7 +3036,7 @@ function openPassengerModal(trainObj, classObj) {
             <div class="passenger-fields-grid">
                 <div>
                     <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Full Name</label>
-                    <input type="text" class="form-control p-name" value="${i === 1 ? 'Bhavi Sharma' : (defaultNames[i-1] || 'Passenger ' + i)}" placeholder="Passenger name" required minlength="2">
+                    <input type="text" class="form-control p-name" value="${i === 1 ? 'Bhavi Sharma' : (defaultNames[i - 1] || 'Passenger ' + i)}" placeholder="Passenger name" required minlength="2">
                 </div>
                 <div>
                     <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Age</label>
@@ -2761,185 +3063,185 @@ function openPassengerModal(trainObj, classObj) {
                 </div>
             </div>
         `;
-        container.appendChild(row);
-    }
-
-    document.getElementById("passengerModal").classList.add("show");
-}
-
-function closePassengerModal() {
-    document.getElementById("passengerModal").classList.remove("show");
-}
-
-// Submit Demo Booking
-async function submitDemoBooking(event) {
-    event.preventDefault();
-
-    const nameInputs = document.querySelectorAll(".p-name");
-    const ageInputs = document.querySelectorAll(".p-age");
-    const genderInputs = document.querySelectorAll(".p-gender");
-    const berthInputs = document.querySelectorAll(".p-berth");
-
-    const passengers = [];
-    for (let i = 0; i < nameInputs.length; i++) {
-        passengers.push({
-            name: nameInputs[i].value.trim(),
-            age: parseInt(ageInputs[i].value, 10),
-            gender: genderInputs[i].value,
-            berthPreference: berthInputs[i].value
-        });
-    }
-
-    const payload = {
-        trainNumber: selectedBookingTrain.trainNumber,
-        fromCode: selectedFromStation.code,
-        toCode: selectedToStation.code,
-        journeyDate: document.getElementById("bookDate").value,
-        travelClass: selectedBookingClass.classType,
-        passengers,
-        contactMobile: document.getElementById("contactMobile").value.trim(),
-        contactEmail: document.getElementById("contactEmail").value.trim()
-    };
-
-    let bookingResult = null;
-
-    // Send to backend server
-    try {
-        const resp = await fetch("/api/bookings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        if (resp.ok) {
-            const json = await resp.json();
-            if (json.success && json.booking) {
-                bookingResult = json.booking;
+                container.appendChild(row);
             }
-        } else {
-            const err = await resp.json();
-            alert("Booking Error: " + (err.message || "Failed to book"));
-            return;
+
+            document.getElementById("passengerModal").classList.add("show");
         }
-    } catch (err) {
-        // Fallback to local client simulation if server offline
-    }
 
-    if (!bookingResult) {
-        bookingResult = createClientDemoBooking(payload, selectedBookingTrain, selectedBookingClass);
-    }
-
-    // Save to local storage as backup cache
-    saveBookingToLocalCache(bookingResult);
-    updateMyBookingsBadge();
-
-    closePassengerModal();
-    showPrintableTicket(bookingResult);
-}
-
-// Fallback client booking creator
-function createClientDemoBooking(payload, train, classObj) {
-    const p1 = Math.floor(100 + Math.random() * 900);
-    const p2 = Math.floor(1000000 + Math.random() * 9000000);
-    const pnr = `${p1}-${p2}`;
-    const bookingId = `RM-${Date.now().toString().slice(-6)}`;
-    const cfg = CLASS_CONFIG[payload.travelClass] || CLASS_CONFIG["SL"];
-    const coach = `${cfg.coachPrefix}${Math.floor(Math.random() * 3) + 1}`;
-    const startSeat = Math.floor(Math.random() * 50) + 1;
-
-    const passengerDetails = payload.passengers.map((p, idx) => ({
-        name: p.name,
-        age: p.age,
-        gender: p.gender,
-        berthPreference: p.berthPreference,
-        coach: coach,
-        seatNo: startSeat + idx,
-        berth: p.berthPreference || "Berth",
-        seatString: `${coach} / Seat ${startSeat + idx} (${p.berthPreference || 'Berth'})`,
-        bookingStatus: "CNF"
-    }));
-
-    return {
-        pnr,
-        bookingId,
-        status: "CONFIRMED",
-        isDemo: true,
-        demoNotice: "DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.",
-        createdAt: new Date().toISOString(),
-        train: {
-            number: train.trainNumber,
-            name: train.trainName,
-            type: train.trainType
-        },
-        journey: {
-            fromStation: train.fromStation.name,
-            fromCode: train.fromStation.code,
-            toStation: train.toStation.name,
-            toCode: train.toStation.code,
-            departureTime: train.departureTime,
-            arrivalTime: train.arrivalTime,
-            journeyDate: payload.journeyDate,
-            distanceKm: train.distanceKm
-        },
-        travelClass: {
-            code: payload.travelClass,
-            name: classObj.className
-        },
-        passengers: passengerDetails,
-        fareSummary: {
-            passengerCount: payload.passengers.length,
-            farePerPassenger: classObj.totalFare,
-            totalAmount: classObj.totalFare * payload.passengers.length
-        },
-        contact: {
-            mobile: payload.contactMobile,
-            email: payload.contactEmail
+        function closePassengerModal() {
+            document.getElementById("passengerModal").classList.remove("show");
         }
-    };
-}
 
-function saveBookingToLocalCache(booking) {
-    try {
-        const stored = JSON.parse(localStorage.getItem("railmate_bookings") || "[]");
-        stored.unshift(booking);
-        localStorage.setItem("railmate_bookings", JSON.stringify(stored));
-    } catch(e) {}
-}
+        // Submit Demo Booking
+        async function submitDemoBooking(event) {
+            event.preventDefault();
 
-function getLocalCachedBookings() {
-    try {
-        return JSON.parse(localStorage.getItem("railmate_bookings") || "[]");
-    } catch(e) {
-        return [];
-    }
-}
+            const nameInputs = document.querySelectorAll(".p-name");
+            const ageInputs = document.querySelectorAll(".p-age");
+            const genderInputs = document.querySelectorAll(".p-gender");
+            const berthInputs = document.querySelectorAll(".p-berth");
 
-async function updateMyBookingsBadge() {
-    let count = 0;
-    try {
-        const res = await fetch("/api/bookings");
-        if (res.ok) {
-            const j = await res.json();
-            if (j.success && j.data) {
-                count = j.data.length;
+            const passengers = [];
+            for (let i = 0; i < nameInputs.length; i++) {
+                passengers.push({
+                    name: nameInputs[i].value.trim(),
+                    age: parseInt(ageInputs[i].value, 10),
+                    gender: genderInputs[i].value,
+                    berthPreference: berthInputs[i].value
+                });
+            }
+
+            const payload = {
+                trainNumber: selectedBookingTrain.trainNumber,
+                fromCode: selectedFromStation.code,
+                toCode: selectedToStation.code,
+                journeyDate: document.getElementById("bookDate").value,
+                travelClass: selectedBookingClass.classType,
+                passengers,
+                contactMobile: document.getElementById("contactMobile").value.trim(),
+                contactEmail: document.getElementById("contactEmail").value.trim()
+            };
+
+            let bookingResult = null;
+
+            // Send to backend server
+            try {
+                const resp = await fetch("/api/bookings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (resp.ok) {
+                    const json = await resp.json();
+                    if (json.success && json.booking) {
+                        bookingResult = json.booking;
+                    }
+                } else {
+                    const err = await resp.json();
+                    alert("Booking Error: " + (err.message || "Failed to book"));
+                    return;
+                }
+            } catch (err) {
+                // Fallback to local client simulation if server offline
+            }
+
+            if (!bookingResult) {
+                bookingResult = createClientDemoBooking(payload, selectedBookingTrain, selectedBookingClass);
+            }
+
+            // Save to local storage as backup cache
+            saveBookingToLocalCache(bookingResult);
+            updateMyBookingsBadge();
+
+            closePassengerModal();
+            showPrintableTicket(bookingResult);
+        }
+
+        // Fallback client booking creator
+        function createClientDemoBooking(payload, train, classObj) {
+            const p1 = Math.floor(100 + Math.random() * 900);
+            const p2 = Math.floor(1000000 + Math.random() * 9000000);
+            const pnr = `${p1}-${p2}`;
+            const bookingId = `RM-${Date.now().toString().slice(-6)}`;
+            const cfg = CLASS_CONFIG[payload.travelClass] || CLASS_CONFIG["SL"];
+            const coach = `${cfg.coachPrefix}${Math.floor(Math.random() * 3) + 1}`;
+            const startSeat = Math.floor(Math.random() * 50) + 1;
+
+            const passengerDetails = payload.passengers.map((p, idx) => ({
+                name: p.name,
+                age: p.age,
+                gender: p.gender,
+                berthPreference: p.berthPreference,
+                coach: coach,
+                seatNo: startSeat + idx,
+                berth: p.berthPreference || "Berth",
+                seatString: `${coach} / Seat ${startSeat + idx} (${p.berthPreference || 'Berth'})`,
+                bookingStatus: "CNF"
+            }));
+
+            return {
+                pnr,
+                bookingId,
+                status: "CONFIRMED",
+                isDemo: true,
+                demoNotice: "DEMO BOOKING ONLY — NOT A REAL RAILWAY TICKET. NO REAL RESERVATION OR PAYMENT IS MADE.",
+                createdAt: new Date().toISOString(),
+                train: {
+                    number: train.trainNumber,
+                    name: train.trainName,
+                    type: train.trainType
+                },
+                journey: {
+                    fromStation: train.fromStation.name,
+                    fromCode: train.fromStation.code,
+                    toStation: train.toStation.name,
+                    toCode: train.toStation.code,
+                    departureTime: train.departureTime,
+                    arrivalTime: train.arrivalTime,
+                    journeyDate: payload.journeyDate,
+                    distanceKm: train.distanceKm
+                },
+                travelClass: {
+                    code: payload.travelClass,
+                    name: classObj.className
+                },
+                passengers: passengerDetails,
+                fareSummary: {
+                    passengerCount: payload.passengers.length,
+                    farePerPassenger: classObj.totalFare,
+                    totalAmount: classObj.totalFare * payload.passengers.length
+                },
+                contact: {
+                    mobile: payload.contactMobile,
+                    email: payload.contactEmail
+                }
+            };
+        }
+
+        function saveBookingToLocalCache(booking) {
+            try {
+                const stored = JSON.parse(localStorage.getItem("railmate_bookings") || "[]");
+                stored.unshift(booking);
+                localStorage.setItem("railmate_bookings", JSON.stringify(stored));
+            } catch (e) { }
+        }
+
+        function getLocalCachedBookings() {
+            try {
+                return JSON.parse(localStorage.getItem("railmate_bookings") || "[]");
+            } catch (e) {
+                return [];
             }
         }
-    } catch(e) {}
 
-    if (count === 0) {
-        count = getLocalCachedBookings().length;
-    }
+        async function updateMyBookingsBadge() {
+            let count = 0;
+            try {
+                const res = await fetch("/api/bookings");
+                if (res.ok) {
+                    const j = await res.json();
+                    if (j.success && j.data) {
+                        count = j.data.length;
+                    }
+                }
+            } catch (e) { }
 
-    const badge = document.getElementById("myBookingsBadge");
-    if (badge) badge.textContent = count;
-}
+            if (count === 0) {
+                count = getLocalCachedBookings().length;
+            }
 
-// Show Printable Ticket Modal
-function showPrintableTicket(booking) {
-    currentTicketForView = booking;
-    const content = document.getElementById("ticketPrintContent");
+            const badge = document.getElementById("myBookingsBadge");
+            if (badge) badge.textContent = count;
+        }
 
-    const passRowsHtml = booking.passengers.map((p, i) => `
+        // Show Printable Ticket Modal
+        function showPrintableTicket(booking) {
+            currentTicketForView = booking;
+            const content = document.getElementById("ticketPrintContent");
+
+            const passRowsHtml = booking.passengers.map((p, i) => `
         <tr>
             <td>${i + 1}</td>
             <td><strong>${p.name}</strong></td>
@@ -2950,7 +3252,7 @@ function showPrintableTicket(booking) {
         </tr>
     `).join("");
 
-    content.innerHTML = `
+            content.innerHTML = `
         <div class="ticket-sheet">
             <div class="ticket-watermark">DEMO TICKET ONLY</div>
 
@@ -3038,77 +3340,77 @@ function showPrintableTicket(booking) {
         </div>
     `;
 
-    document.getElementById("printableTicketModal").classList.add("show");
-}
-
-function closeTicketModal() {
-    document.getElementById("printableTicketModal").classList.remove("show");
-}
-
-function trackFromTicket() {
-    if (!currentTicketForView) return;
-    const trainNo = currentTicketForView.train.number;
-    closeTicketModal();
-    loadTrainDirect(trainNo);
-    switchMainTab('tracking');
-}
-
-// =========================================================
-// MY BOOKINGS VIEW
-// =========================================================
-async function loadMyBookings() {
-    const container = document.getElementById("myBookingsContainer");
-    container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Loading demo bookings...</div>`;
-
-    let bookings = [];
-
-    try {
-        const resp = await fetch("/api/bookings");
-        if (resp.ok) {
-            const j = await resp.json();
-            if (j.success && Array.isArray(j.data)) {
-                bookings = j.data;
-            }
+            document.getElementById("printableTicketModal").classList.add("show");
         }
-    } catch(e) {}
 
-    // Merge with client cache if server returned empty
-    if (bookings.length === 0) {
-        bookings = getLocalCachedBookings();
-    }
+        function closeTicketModal() {
+            document.getElementById("printableTicketModal").classList.remove("show");
+        }
 
-    renderMyBookingsList(bookings);
-    updateMyBookingsBadge();
-}
+        function trackFromTicket() {
+            if (!currentTicketForView) return;
+            const trainNo = currentTicketForView.train.number;
+            closeTicketModal();
+            loadTrainDirect(trainNo);
+            switchMainTab('tracking');
+        }
 
-function filterBookingsByPnr() {
-    const q = document.getElementById("pnrFilterInput").value.trim().replace(/\D/g, "");
-    if (!q) {
-        loadMyBookings();
-        return;
-    }
+        // =========================================================
+        // MY BOOKINGS VIEW
+        // =========================================================
+        async function loadMyBookings() {
+            const container = document.getElementById("myBookingsContainer");
+            container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Loading demo bookings...</div>`;
 
-    fetch(`/api/booking/${q}`)
-        .then(r => r.json())
-        .then(j => {
-            if (j.success && j.data) {
-                renderMyBookingsList([j.data]);
-            } else {
-                alert(`No demo booking found with PNR "${q}".`);
+            let bookings = [];
+
+            try {
+                const resp = await fetch("/api/bookings");
+                if (resp.ok) {
+                    const j = await resp.json();
+                    if (j.success && Array.isArray(j.data)) {
+                        bookings = j.data;
+                    }
+                }
+            } catch (e) { }
+
+            // Merge with client cache if server returned empty
+            if (bookings.length === 0) {
+                bookings = getLocalCachedBookings();
             }
-        })
-        .catch(() => {
-            const cached = getLocalCachedBookings().filter(b => b.pnr.replace(/\D/g, "").includes(q));
-            renderMyBookingsList(cached);
-        });
-}
 
-function renderMyBookingsList(bookings) {
-    const container = document.getElementById("myBookingsContainer");
-    container.innerHTML = "";
+            renderMyBookingsList(bookings);
+            updateMyBookingsBadge();
+        }
 
-    if (!bookings || bookings.length === 0) {
-        container.innerHTML = `
+        function filterBookingsByPnr() {
+            const q = document.getElementById("pnrFilterInput").value.trim().replace(/\D/g, "");
+            if (!q) {
+                loadMyBookings();
+                return;
+            }
+
+            fetch(`/api/booking/${q}`)
+                .then(r => r.json())
+                .then(j => {
+                    if (j.success && j.data) {
+                        renderMyBookingsList([j.data]);
+                    } else {
+                        alert(`No demo booking found with PNR "${q}".`);
+                    }
+                })
+                .catch(() => {
+                    const cached = getLocalCachedBookings().filter(b => b.pnr.replace(/\D/g, "").includes(q));
+                    renderMyBookingsList(cached);
+                });
+        }
+
+        function renderMyBookingsList(bookings) {
+            const container = document.getElementById("myBookingsContainer");
+            container.innerHTML = "";
+
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
             <div style="background:white; border-radius:14px; padding:40px; text-align:center; border:1px solid var(--border-color); color:var(--text-muted);">
                 <div style="font-size:42px; margin-bottom:12px;">📋</div>
                 <h3 style="color:var(--primary); margin-bottom:8px;">No Demo Bookings Yet</h3>
@@ -3118,17 +3420,17 @@ function renderMyBookingsList(bookings) {
                 </button>
             </div>
         `;
-        return;
-    }
+                return;
+            }
 
-    bookings.forEach(b => {
-        const card = document.createElement("div");
-        card.className = "my-booking-card";
+            bookings.forEach(b => {
+                const card = document.createElement("div");
+                card.className = "my-booking-card";
 
-        const isCnf = b.status === "CONFIRMED";
-        const passengersSummary = b.passengers.map(p => `${p.name} (${p.seatString || p.coach})`).join(", ");
+                const isCnf = b.status === "CONFIRMED";
+                const passengersSummary = b.passengers.map(p => `${p.name} (${p.seatString || p.coach})`).join(", ");
 
-        card.innerHTML = `
+                card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                 <div>
                     <span style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">PNR:</span>
@@ -3182,38 +3484,39 @@ function renderMyBookingsList(bookings) {
             </div>
         `;
 
-        container.appendChild(card);
-    });
-}
-
-// Cancel Demo Booking Action
-async function cancelDemoBooking(pnr) {
-    if (!confirm(`Are you sure you want to cancel demo booking with PNR: ${pnr}?\n\nThis will release your demo seats and calculate a simulated refund.`)) {
-        return;
-    }
-
-    try {
-        const resp = await fetch(`/api/booking/${encodeURIComponent(pnr)}/cancel`, { method: "POST" });
-        if (resp.ok) {
-            const j = await resp.json();
-            alert(`Demo booking PNR ${pnr} has been cancelled!\n\nSimulated Refund: ₹ ${j.demoRefundAmount?.toLocaleString('en-IN') || '0'}`);
-            loadMyBookings();
-            return;
+                container.appendChild(card);
+            });
         }
-    } catch(e) {}
 
-    // Fallback cancel in local cache
-    const cached = getLocalCachedBookings();
-    const item = cached.find(b => b.pnr === pnr);
-    if (item) {
-        item.status = "CANCELLED";
-        item.demoRefundAmount = Math.round(item.fareSummary.totalAmount * 0.85);
-        localStorage.setItem("railmate_bookings", JSON.stringify(cached));
-        alert(`Demo booking PNR ${pnr} has been cancelled locally!\n\nSimulated Refund: ₹ ${item.demoRefundAmount.toLocaleString('en-IN')}`);
-        loadMyBookings();
-    }
-}
-</script>
+        // Cancel Demo Booking Action
+        async function cancelDemoBooking(pnr) {
+            if (!confirm(`Are you sure you want to cancel demo booking with PNR: ${pnr}?\n\nThis will release your demo seats and calculate a simulated refund.`)) {
+                return;
+            }
+
+            try {
+                const resp = await fetch(`/api/booking/${encodeURIComponent(pnr)}/cancel`, { method: "POST" });
+                if (resp.ok) {
+                    const j = await resp.json();
+                    alert(`Demo booking PNR ${pnr} has been cancelled!\n\nSimulated Refund: ₹ ${j.demoRefundAmount?.toLocaleString('en-IN') || '0'}`);
+                    loadMyBookings();
+                    return;
+                }
+            } catch (e) { }
+
+            // Fallback cancel in local cache
+            const cached = getLocalCachedBookings();
+            const item = cached.find(b => b.pnr === pnr);
+            if (item) {
+                item.status = "CANCELLED";
+                item.demoRefundAmount = Math.round(item.fareSummary.totalAmount * 0.85);
+                localStorage.setItem("railmate_bookings", JSON.stringify(cached));
+                alert(`Demo booking PNR ${pnr} has been cancelled locally!\n\nSimulated Refund: ₹ ${item.demoRefundAmount.toLocaleString('en-IN')}`);
+                loadMyBookings();
+            }
+        }
+    </script>
 
 </body>
+
 </html>

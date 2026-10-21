@@ -1,5 +1,5 @@
 // RailMate - Indian Railways Simulation & Booking Dataset
-// Author: Bhavi_LM
+// Author: RailMate
 // Academic & Demo Simulation Dataset - No paid external API required
 
 const CLASS_CONFIG = {

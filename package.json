@@ -14,7 +14,7 @@
     "simulation",
     "college-project"
   ],
-  "author": "Bhavi_LM",
+  
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
