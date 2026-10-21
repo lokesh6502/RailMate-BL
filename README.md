@@ -9,7 +9,7 @@ Mode: **SIMULATION MODE — DEMO DATA (Academic & Demonstration Purposes Only)**
 
 ## 🌟 Overview & Key Features
 
-RailMate is a responsive web application designed for BCA college presentation that integrates both **Real-Time Train Simulation Tracking** and an **Indian Railway-Style Demo Ticket Booking Portal** without requiring any paid APIs, API keys, or external redirection.
+RailMate is a responsive web application designed for BCA college presentation that integrates both **RailMate** and an **Indian Railway-Style Demo Ticket Booking Portal** without requiring any paid APIs, API keys, or external redirection.
 
 ### 1. 🚆 RailMate
 * **Free Leaflet.js & OpenStreetMap**: Renders full railway track polylines, station stops with scheduled arrival/departures, and an animated train marker (🚆).
