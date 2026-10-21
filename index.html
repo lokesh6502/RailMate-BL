@@ -3530,25 +3530,156 @@ All train positions, coordinates, speeds, and delays displayed on this page are
     if (!selector) return;
 
     const translations = {
-        mr: {
-            "Home": "मुख्यपृष्ठ",
-            "Search": "शोधा",
-            "Search Train": "ट्रेन शोधा",
-            "Live Train Tracking": "थेट ट्रेन ट्रॅकिंग",
-            "Booking": "बुकिंग",
-            "Login": "लॉगिन",
-            "Register": "नोंदणी"
-        },
-        hi: {
-            "Home": "होम",
-            "Search": "खोजें",
-            "Search Train": "ट्रेन खोजें",
-            "Live Train Tracking": "लाइव ट्रेन ट्रैकिंग",
-            "Booking": "बुकिंग",
-            "Login": "लॉगिन",
-            "Register": "पंजीकरण"
+    mr: {
+        "Home": "मुख्यपृष्ठ",
+        "Search": "शोधा",
+        "Search Train": "ट्रेन शोधा",
+        "Live Train Tracking": "थेट ट्रेन ट्रॅकिंग",
+        "Booking": "बुकिंग",
+        "Login": "लॉगिन",
+        "Register": "नोंदणी",
+        "Track Indian Train in Real Time": "भारतीय ट्रेनचे थेट ट्रॅकिंग करा",
+        "Train Tracking": "ट्रेन ट्रॅकिंग",
+        "Train Search": "ट्रेन शोध",
+        "From": "कोठून",
+        "To": "कोठे",
+        "Date": "दिनांक",
+        "Find Train": "ट्रेन शोधा",
+        "Search Results": "शोधाचे निकाल",
+        "Train Name": "ट्रेनचे नाव",
+        "Train Number": "ट्रेन क्रमांक",
+        "Departure": "प्रस्थान",
+        "Arrival": "आगमन",
+        "Station": "स्थानक",
+        "Status": "स्थिती",
+        "Platform": "प्लॅटफॉर्म",
+        "Time": "वेळ",
+        "Available": "उपलब्ध",
+        "Cancel": "रद्द करा",
+        "Submit": "सबमिट करा",
+        "Contact Us": "संपर्क साधा",
+        "About Us": "आमच्याबद्दल",
+        "Help": "मदत",
+        "Settings": "सेटिंग्ज",
+        "Language": "भाषा",
+        "Welcome": "स्वागत आहे"
+    },
+
+    hi: {
+        "Home": "होम",
+        "Search": "खोजें",
+        "Search Train": "ट्रेन खोजें",
+        "Live Train Tracking": "लाइव ट्रेन ट्रैकिंग",
+        "Booking": "बुकिंग",
+        "Login": "लॉगिन",
+        "Register": "पंजीकरण",
+        "Track Indian Train in Real Time": "भारतीय ट्रेन को लाइव ट्रैक करें",
+        "Train Tracking": "ट्रेन ट्रैकिंग",
+        "Train Search": "ट्रेन खोज",
+        "From": "कहाँ से",
+        "To": "कहाँ तक",
+        "Date": "तारीख",
+        "Find Train": "ट्रेन खोजें",
+        "Search Results": "खोज के परिणाम",
+        "Train Name": "ट्रेन का नाम",
+        "Train Number": "ट्रेन नंबर",
+        "Departure": "प्रस्थान",
+        "Arrival": "आगमन",
+        "Station": "स्टेशन",
+        "Status": "स्थिति",
+        "Platform": "प्लेटफॉर्म",
+        "Time": "समय",
+        "Available": "उपलब्ध",
+        "Cancel": "रद्द करें",
+        "Submit": "जमा करें",
+        "Contact Us": "संपर्क करें",
+        "About Us": "हमारे बारे में",
+        "Help": "मदद",
+        "Settings": "सेटिंग्स",
+        "Language": "भाषा",
+        "Welcome": "स्वागत है"
+    }
+};
+
+    const originalTexts = new Map();
+
+    function saveOriginalText(element) {
+        if (!originalTexts.has(element)) {
+            originalTexts.set(element, element.textContent);
         }
-    };
+    }
+
+    const translations = {
+    mr: {
+        "Home": "मुख्यपृष्ठ",
+        "Search": "शोधा",
+        "Search Train": "ट्रेन शोधा",
+        "Live Train Tracking": "थेट ट्रेन ट्रॅकिंग",
+        "Booking": "बुकिंग",
+        "Login": "लॉगिन",
+        "Register": "नोंदणी",
+        "Track Indian Train in Real Time": "भारतीय ट्रेनचे थेट ट्रॅकिंग करा",
+        "Train Tracking": "ट्रेन ट्रॅकिंग",
+        "Train Search": "ट्रेन शोध",
+        "From": "कोठून",
+        "To": "कोठे",
+        "Date": "दिनांक",
+        "Find Train": "ट्रेन शोधा",
+        "Search Results": "शोधाचे निकाल",
+        "Train Name": "ट्रेनचे नाव",
+        "Train Number": "ट्रेन क्रमांक",
+        "Departure": "प्रस्थान",
+        "Arrival": "आगमन",
+        "Station": "स्थानक",
+        "Status": "स्थिती",
+        "Platform": "प्लॅटफॉर्म",
+        "Time": "वेळ",
+        "Available": "उपलब्ध",
+        "Cancel": "रद्द करा",
+        "Submit": "सबमिट करा",
+        "Contact Us": "संपर्क साधा",
+        "About Us": "आमच्याबद्दल",
+        "Help": "मदत",
+        "Settings": "सेटिंग्ज",
+        "Language": "भाषा",
+        "Welcome": "स्वागत आहे"
+    },
+
+    hi: {
+        "Home": "होम",
+        "Search": "खोजें",
+        "Search Train": "ट्रेन खोजें",
+        "Live Train Tracking": "लाइव ट्रेन ट्रैकिंग",
+        "Booking": "बुकिंग",
+        "Login": "लॉगिन",
+        "Register": "पंजीकरण",
+        "Track Indian Train in Real Time": "भारतीय ट्रेन को लाइव ट्रैक करें",
+        "Train Tracking": "ट्रेन ट्रैकिंग",
+        "Train Search": "ट्रेन खोज",
+        "From": "कहाँ से",
+        "To": "कहाँ तक",
+        "Date": "तारीख",
+        "Find Train": "ट्रेन खोजें",
+        "Search Results": "खोज के परिणाम",
+        "Train Name": "ट्रेन का नाम",
+        "Train Number": "ट्रेन नंबर",
+        "Departure": "प्रस्थान",
+        "Arrival": "आगमन",
+        "Station": "स्टेशन",
+        "Status": "स्थिति",
+        "Platform": "प्लेटफॉर्म",
+        "Time": "समय",
+        "Available": "उपलब्ध",
+        "Cancel": "रद्द करें",
+        "Submit": "जमा करें",
+        "Contact Us": "संपर्क करें",
+        "About Us": "हमारे बारे में",
+        "Help": "मदद",
+        "Settings": "सेटिंग्स",
+        "Language": "भाषा",
+        "Welcome": "स्वागत है"
+    }
+};
 
     const originalTexts = new Map();
 
@@ -3582,7 +3713,26 @@ All train positions, coordinates, speeds, and delays displayed on this page are
         changeLanguage(selector.value);
     });
 
-    const savedLanguage = localStorage.getItem("railmateLanguage") || "en";
+    const savedLanguage = 
+localStorage.getItem("railmateLanguage") || "en";
+    selector.value = savedLanguage;
+    changeLanguage(savedLanguage);
+})();
+</script>
+</body>
+
+</html>
+        });
+
+        localStorage.setItem("railmateLanguage", language);
+    }
+
+    selector.addEventListener("change", function () {
+        changeLanguage(selector.value);
+    });
+
+    const savedLanguage = 
+localStorage.getItem("railmateLanguage") || "en";
     selector.value = savedLanguage;
     changeLanguage(savedLanguage);
 })();
