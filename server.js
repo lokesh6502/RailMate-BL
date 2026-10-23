@@ -1,58 +1,49 @@
 // RailMate - Indian Railway Simulation & Demo Ticket Booking Server
-// Creator: RailMate
-// Academic & College Project Demo — SIMULATION MODE
+// Mode: SIMULATION MODE (SQLite Database Active)
+// All tracking, schedules, seat inventory, and bookings are simulated demo data.
 
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+
 const {
-  TRAINS,
+  getDb,
+  getAllTrains,
+  getTrainByNumber,
+  searchTrains,
+  getAllStationsList,
+  getTrainsForStation,
+  findTrainsBetweenStations: dbFindTrainsBetweenStations,
+  getSeatInventory,
+  getPlatformInfo,
+  getFareChart,
+  registerUser,
+  loginUser,
+  getUserProfile,
+  getUserBookings,
+  getAllBookings,
+  getBookingByPnr,
+  createBooking: dbCreateBooking,
+  cancelBooking: dbCancelBooking
+} = require("./data/db");
+
+const {
   CLASS_CONFIG,
-  getAllStations,
-  calculateFare,
-  getSeatAvailability,
-  findTrainsByStation,
-  findTrain,
-  findTrainsBetweenStations,
-  matchStation
+  calculateFare
 } = require("./data/trains");
+
+// Initialize SQLite database schema and seed on boot
+getDb();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BOOKINGS_FILE = path.join(__dirname, "data", "bookings.json");
 
 app.use(cors());
 app.use(express.json());
 
 // Serve static frontend files directly
 app.use(express.static(path.join(__dirname)));
-
-// Helper: Read bookings safely
-function readBookings() {
-  try {
-    if (!fs.existsSync(BOOKINGS_FILE)) {
-      fs.writeFileSync(BOOKINGS_FILE, "[]", "utf8");
-      return [];
-    }
-    const data = fs.readFileSync(BOOKINGS_FILE, "utf8");
-    return JSON.parse(data || "[]");
-  } catch (err) {
-    console.error("Error reading bookings file:", err.message);
-    return [];
-  }
-}
-
-// Helper: Save bookings safely
-function saveBookings(bookings) {
-  try {
-    fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), "utf8");
-    return true;
-  } catch (err) {
-    console.error("Error writing bookings file:", err.message);
-    return false;
-  }
-}
 
 // Helper: Generate 10-digit Indian Railway format DEMO PNR (e.g. 642-1893425)
 function generateDemoPnr() {
@@ -92,41 +83,75 @@ function assignDemoSeats(travelClass, passengerCount, startSeat = null) {
 }
 
 // ==========================================
-// 1. SIMULATION & TRACKING ENDPOINTS
+// 1. TRAIN SEARCH & SIMULATION ENDPOINTS
 // ==========================================
 
-// Get all available simulation trains
+// Get all trains summary
 app.get("/api/trains", (req, res) => {
-  const trainList = TRAINS.map(t => ({
-    trainNumber: t.trainNumber,
-    trainName: t.trainName,
-    trainType: t.trainType,
-    from: t.from,
-    to: t.to,
-    departureTime: t.departureTime,
-    arrivalTime: t.arrivalTime,
-    totalDistanceKm: t.totalDistanceKm,
-    stationCount: t.stations.length,
-    availableClasses: t.availableClasses
-  }));
+  try {
+    const trainList = getAllTrains();
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      database: "SQLite",
+      count: trainList.length,
+      data: trainList
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Get all trains with full stop lists
+app.get("/api/trains/all", (req, res) => {
+  try {
+    const trainSummaries = getAllTrains();
+    const detailed = trainSummaries.map(t => getTrainByNumber(t.trainNumber)).filter(Boolean);
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      database: "SQLite",
+      count: detailed.length,
+      data: detailed
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Search train by query (multi-match for autocomplete & suggestions)
+app.get("/api/trains/search/:query", (req, res) => {
+  const query = (req.params.query || "").trim();
+  if (!query) {
+    return res.status(400).json({ success: false, message: "Search query required." });
+  }
+
+  const results = searchTrains(query);
   res.json({
     success: true,
     mode: "SIMULATION_DEMO",
-    count: trainList.length,
-    data: trainList
+    count: results.length,
+    data: results
   });
 });
 
-// Search train by number or name
+// Get single train by number or exact match
 app.get("/api/train/:query", (req, res) => {
-  const query = req.params.query.trim();
-  const train = findTrain(query);
+  const query = (req.params.query || "").trim();
+  let train = getTrainByNumber(query);
+
+  if (!train) {
+    const matches = searchTrains(query);
+    if (matches.length > 0) {
+      train = matches[0];
+    }
+  }
 
   if (!train) {
     return res.status(404).json({
       success: false,
       mode: "SIMULATION_DEMO",
-      message: `No simulation train found matching "${query}". Try searching 12951, 22436, 12002, 12301, 11077, or 12626.`
+      message: `No simulation train found matching "${query}". Available demo trains: 12951, 22436, 12002, 12301, 11077, 12626, 12004, 20901, 12137, 12259, 12431, 12051.`
     });
   }
 
@@ -139,25 +164,29 @@ app.get("/api/train/:query", (req, res) => {
 
 // Get all unique stations
 app.get("/api/stations", (req, res) => {
-  const stations = getAllStations();
-  res.json({
-    success: true,
-    mode: "SIMULATION_DEMO",
-    count: stations.length,
-    data: stations
-  });
+  try {
+    const stations = getAllStationsList();
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      count: stations.length,
+      data: stations
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // Search trains stopping at a station
 app.get("/api/station/:query", (req, res) => {
-  const query = req.params.query.trim();
-  const trains = findTrainsByStation(query);
+  const query = (req.params.query || "").trim();
+  const trains = getTrainsForStation(query);
 
   if (trains.length === 0) {
     return res.status(404).json({
       success: false,
       mode: "SIMULATION_DEMO",
-      message: `No simulation trains found for station "${query}". Try NDLS, Jalgaon, Mumbai, Bhopal, Kanpur, or Pune.`
+      message: `No demo trains found stopping at "${query}". Try searching stations like New Delhi (NDLS), Mumbai, Surat, Kota, Bhopal, or Pune.`
     });
   }
 
@@ -166,7 +195,10 @@ app.get("/api/station/:query", (req, res) => {
     trainName: t.trainName,
     trainType: t.trainType,
     from: t.from,
-    to: t.to
+    to: t.to,
+    departureTime: t.departureTime,
+    arrivalTime: t.arrivalTime,
+    stationCount: t.stations.length
   }));
 
   res.json({
@@ -178,11 +210,11 @@ app.get("/api/station/:query", (req, res) => {
   });
 });
 
-// Simulation position calculation endpoint
+// Simulation position calculation
 app.get("/api/simulation/:trainNo", (req, res) => {
-  const train = findTrain(req.params.trainNo);
+  const train = getTrainByNumber(req.params.trainNo);
   if (!train) {
-    return res.status(404).json({ success: false, message: "Train not found" });
+    return res.status(404).json({ success: false, message: "Train not found in SQLite database" });
   }
 
   const progress = Math.min(100, Math.max(0, parseFloat(req.query.progress) || 0));
@@ -192,43 +224,54 @@ app.get("/api/simulation/:trainNo", (req, res) => {
   const segmentFraction = (progress / 100) * (totalStations - 1);
   const currentIndex = Math.min(Math.floor(segmentFraction), totalStations - 2);
   const nextIndex = currentIndex + 1;
+  const previousIndex = Math.max(0, currentIndex);
   const subFraction = segmentFraction - currentIndex;
 
+  const prevSt = stations[previousIndex];
   const currentSt = stations[currentIndex];
   const nextSt = stations[nextIndex];
+  const destSt = stations[totalStations - 1];
 
   const currentLat = currentSt.lat + (nextSt.lat - currentSt.lat) * subFraction;
   const currentLng = currentSt.lng + (nextSt.lng - currentSt.lng) * subFraction;
-  const currentDistance = Math.round(currentSt.distanceKm + (nextSt.distanceKm - currentSt.distanceKm) * subFraction);
+  const coveredKm = Math.round(currentSt.distanceKm + (nextSt.distanceKm - currentSt.distanceKm) * subFraction);
+  const remainingKm = Math.max(0, train.totalDistanceKm - coveredKm);
+
+  // Speed and delay
+  const simSpeed = progress >= 100 ? 0 : Math.round(train.avgSpeedKmh + (Math.sin(progress) * 8));
+  const simDelay = train.demoDelayMinutes === 0 ? "On Time" : `${train.demoDelayMinutes} mins late`;
 
   res.json({
     success: true,
     mode: "SIMULATION_DEMO",
     trainNumber: train.trainNumber,
     trainName: train.trainName,
+    trainType: train.trainType,
     progressPercent: Math.round(progress),
     coordinates: {
       lat: parseFloat(currentLat.toFixed(5)),
       lng: parseFloat(currentLng.toFixed(5))
     },
+    previousStation: prevSt.name,
+    previousStationCode: prevSt.code,
     currentStation: currentSt.name,
     currentStationCode: currentSt.code,
     nextStation: nextSt.name,
     nextStationCode: nextSt.code,
-    distanceCoveredKm: currentDistance,
+    destinationStation: destSt.name,
+    destinationStationCode: destSt.code,
+    distanceCoveredKm: coveredKm,
+    distanceRemainingKm: remainingKm,
     totalDistanceKm: train.totalDistanceKm,
-    simulatedSpeedKmh: progress >= 100 ? 0 : Math.round(train.avgSpeedKmh + (Math.sin(progress) * 8)),
-    simulatedDelay: train.demoDelayMinutes === 0 ? "On Time" : `${train.demoDelayMinutes} mins late`,
+    simulatedSpeedKmh: simSpeed,
+    simulatedDelay: simDelay,
     nextStationEta: nextSt.scheduledArrival,
+    lastUpdated: "Just now (5s interval)",
     isArrived: progress >= 100
   });
 });
 
-// ==========================================
-// 2. DEMO TICKET BOOKING ENDPOINTS
-// ==========================================
-
-// Search trains between stations for booking
+// Search trains between stations (Find Trains by Station)
 app.get("/api/search-trains", (req, res) => {
   const { from, to, date, travelClass } = req.query;
 
@@ -246,7 +289,7 @@ app.get("/api/search-trains", (req, res) => {
     });
   }
 
-  const matches = findTrainsBetweenStations(from, to, travelClass, date);
+  const matches = dbFindTrainsBetweenStations(from, to, travelClass, date);
 
   if (matches.length === 0) {
     return res.status(404).json({
@@ -266,7 +309,194 @@ app.get("/api/search-trains", (req, res) => {
   });
 });
 
-// Create a new Demo Booking
+// ==========================================
+// 2. PNR STATUS, SEATS, FARES & PLATFORMS
+// ==========================================
+
+// PNR Status Demo lookup
+app.get("/api/pnr/:pnr", (req, res) => {
+  const pnrRaw = req.params.pnr || "";
+  const booking = getBookingByPnr(pnrRaw);
+
+  if (!booking) {
+    return res.status(404).json({
+      success: false,
+      mode: "SIMULATION_DEMO",
+      message: `No demo booking found with PNR "${pnrRaw}". Try using sample test PNR: 642-1893425 or create a new demo ticket in 'Book Demo Tickets'.`,
+      samplePnr: "642-1893425"
+    });
+  }
+
+  res.json({
+    success: true,
+    mode: "SIMULATION_DEMO",
+    data: booking
+  });
+});
+
+// Seat Availability lookup & inventory
+app.get("/api/seat-availability", (req, res) => {
+  const { trainNumber, travelClass, journeyDate, from, to, passengerCount } = req.query;
+
+  if (!trainNumber) {
+    return res.status(400).json({ success: false, message: "Train number is required." });
+  }
+
+  const train = getTrainByNumber(trainNumber);
+  if (!train) {
+    return res.status(404).json({ success: false, message: `Train ${trainNumber} not found.` });
+  }
+
+  const cls = travelClass || train.availableClasses[0] || "3A";
+  const pCount = Math.max(1, parseInt(passengerCount, 10) || 1);
+  const inv = getSeatInventory(train.trainNumber, cls, journeyDate);
+
+  // Calculate fare
+  let distanceKm = train.totalDistanceKm;
+  if (from && to) {
+    const fIdx = train.stations.findIndex(st => st.code.toLowerCase() === from.toLowerCase() || st.name.toLowerCase().includes(from.toLowerCase()));
+    const tIdx = train.stations.findIndex(st => st.code.toLowerCase() === to.toLowerCase() || st.name.toLowerCase().includes(to.toLowerCase()));
+    if (fIdx !== -1 && tIdx !== -1 && tIdx > fIdx) {
+      distanceKm = train.stations[tIdx].distanceKm - train.stations[fIdx].distanceKm;
+    }
+  }
+
+  const fareObj = calculateFare(cls, distanceKm);
+  const totalFare = fareObj.totalFare * pCount;
+
+  res.json({
+    success: true,
+    mode: "SIMULATION_DEMO",
+    data: {
+      trainNumber: train.trainNumber,
+      trainName: train.trainName,
+      trainType: train.trainType,
+      travelClass: cls,
+      className: fareObj.className,
+      journeyDate: inv.journeyDate,
+      totalSeats: inv.totalSeats,
+      bookedSeats: inv.bookedSeats,
+      availableSeats: inv.availableSeats,
+      status: inv.status,
+      badge: `${inv.status} - ${inv.availableSeats}`,
+      passengerCount: pCount,
+      farePerPassenger: fareObj.totalFare,
+      totalFare,
+      demoNotice: "Simulated seat inventory. Changes dynamically when demo bookings are confirmed or cancelled."
+    }
+  });
+});
+
+// Train Fare Chart comparison
+app.get("/api/fare-chart", (req, res) => {
+  const { trainNumber, from, to, passengerCount } = req.query;
+
+  if (!trainNumber) {
+    return res.status(400).json({ success: false, message: "Train number is required." });
+  }
+
+  const chart = getFareChart(trainNumber, from, to, passengerCount);
+  if (!chart) {
+    return res.status(404).json({ success: false, message: `No fare chart available for train "${trainNumber}".` });
+  }
+
+  res.json({
+    success: true,
+    mode: "SIMULATION_DEMO",
+    data: chart
+  });
+});
+
+// Platform Locator lookup
+app.get("/api/platform-locator", (req, res) => {
+  const { trainNumber, station } = req.query;
+
+  if (!trainNumber || !station) {
+    return res.status(400).json({ success: false, message: "Both train number and station are required." });
+  }
+
+  const info = getPlatformInfo(trainNumber, station);
+  if (!info) {
+    return res.status(404).json({
+      success: false,
+      message: `Train "${trainNumber}" not found in database.`
+    });
+  }
+
+  if (!info.found) {
+    return res.status(404).json({
+      success: false,
+      message: info.message
+    });
+  }
+
+  res.json({
+    success: true,
+    mode: "SIMULATION_DEMO",
+    data: info
+  });
+});
+
+// ==========================================
+// 3. DEMO AUTHENTICATION & PROFILES
+// ==========================================
+
+// Register demo user
+app.post("/api/auth/register", (req, res) => {
+  try {
+    const { name, mobile, email, password } = req.body;
+    const user = registerUser(name, mobile, email, password);
+    res.status(201).json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      message: "Demo account created successfully!",
+      user
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// Login demo user
+app.post("/api/auth/login", (req, res) => {
+  try {
+    const { mobile, password } = req.body;
+    const user = loginUser(mobile, password);
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      message: "Login successful!",
+      user
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// Get user profile & history
+app.get("/api/auth/profile", (req, res) => {
+  const mobile = req.query.mobile;
+  if (!mobile) {
+    return res.status(400).json({ success: false, message: "Mobile number required." });
+  }
+
+  const profile = getUserProfile(mobile);
+  if (!profile) {
+    return res.status(404).json({ success: false, message: "User not found." });
+  }
+
+  res.json({
+    success: true,
+    mode: "SIMULATION_DEMO",
+    data: profile
+  });
+});
+
+// ==========================================
+// 4. DEMO TICKET BOOKING & CANCELLATION
+// ==========================================
+
+// Create a new Demo Booking in SQLite
 app.post("/api/bookings", (req, res) => {
   const {
     trainNumber,
@@ -280,7 +510,7 @@ app.post("/api/bookings", (req, res) => {
   } = req.body;
 
   // Validation 1: Required train
-  const train = findTrain(trainNumber);
+  const train = getTrainByNumber(trainNumber);
   if (!train) {
     return res.status(400).json({ success: false, message: "Invalid train number selected." });
   }
@@ -394,91 +624,90 @@ app.post("/api/bookings", (req, res) => {
       totalAmount
     },
     contact: {
-      mobile: contactMobile || "9876543210 (Demo)",
-      email: contactEmail || "demo.passenger@railmate.local"
+      mobile: contactMobile || "9876543210",
+      email: contactEmail || "passenger@railmate.local"
     }
   };
 
-  const bookings = readBookings();
-  bookings.unshift(newBooking);
-  saveBookings(bookings);
-
-  res.status(201).json({
-    success: true,
-    mode: "SIMULATION_DEMO",
-    message: "Demo ticket booked successfully!",
-    pnr: demoPnr,
-    booking: newBooking
-  });
+  // Persist into SQLite and update seat inventory
+  try {
+    dbCreateBooking(newBooking);
+    res.status(201).json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      message: "Demo ticket booked successfully!",
+      pnr: demoPnr,
+      booking: newBooking
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Database save error: " + err.message });
+  }
 });
 
-// Get all Demo Bookings
+// Get all Demo Bookings from SQLite
 app.get("/api/bookings", (req, res) => {
-  const bookings = readBookings();
-  res.json({
-    success: true,
-    mode: "SIMULATION_DEMO",
-    count: bookings.length,
-    data: bookings
-  });
+  try {
+    const bookings = getAllBookings();
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      count: bookings.length,
+      data: bookings
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-// Get Demo Booking by PNR
+// Get Demo Booking by PNR from SQLite
 app.get("/api/booking/:pnr", (req, res) => {
-  const searchPnr = req.params.pnr.replace(/\D/g, ""); // digits only
-  const bookings = readBookings();
-  const booking = bookings.find(b => b.pnr.replace(/\D/g, "") === searchPnr);
+  try {
+    const booking = getBookingByPnr(req.params.pnr);
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: `No demo booking found with PNR "${req.params.pnr}".`
+      });
+    }
 
-  if (!booking) {
-    return res.status(404).json({
-      success: false,
-      message: `No demo booking found with PNR "${req.params.pnr}".`
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      data: booking
     });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-
-  res.json({
-    success: true,
-    mode: "SIMULATION_DEMO",
-    data: booking
-  });
 });
 
-// Cancel a Demo Booking
+// Cancel a Demo Booking in SQLite
 app.post("/api/booking/:pnr/cancel", (req, res) => {
-  const searchPnr = req.params.pnr.replace(/\D/g, "");
-  const bookings = readBookings();
-  const index = bookings.findIndex(b => b.pnr.replace(/\D/g, "") === searchPnr);
+  try {
+    const result = dbCancelBooking(req.params.pnr);
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: `No demo booking found with PNR "${req.params.pnr}".`
+      });
+    }
 
-  if (index === -1) {
-    return res.status(404).json({
-      success: false,
-      message: `No demo booking found with PNR "${req.params.pnr}".`
+    if (result.alreadyCancelled) {
+      return res.status(400).json({
+        success: false,
+        message: "This demo ticket has already been cancelled."
+      });
+    }
+
+    res.json({
+      success: true,
+      mode: "SIMULATION_DEMO",
+      message: `Demo booking PNR ${result.booking.pnr} has been cancelled.`,
+      demoRefundAmount: result.demoRefundAmount,
+      booking: result.booking
     });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-
-  const booking = bookings[index];
-
-  if (booking.status === "CANCELLED") {
-    return res.status(400).json({
-      success: false,
-      message: "This demo ticket has already been cancelled."
-    });
-  }
-
-  booking.status = "CANCELLED";
-  booking.cancelledAt = new Date().toISOString();
-  booking.cancellationFee = Math.round(booking.fareSummary.totalAmount * 0.15); // demo 15% cancel fee
-  booking.demoRefundAmount = booking.fareSummary.totalAmount - booking.cancellationFee;
-
-  saveBookings(bookings);
-
-  res.json({
-    success: true,
-    mode: "SIMULATION_DEMO",
-    message: `Demo booking PNR ${booking.pnr} has been cancelled.`,
-    demoRefundAmount: booking.demoRefundAmount,
-    booking
-  });
 });
 
 // Fallback to index.html for root
@@ -489,8 +718,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log("=================================================");
   console.log("  RailMate — Live Tracking & Demo Ticket Booking");
-  console.log("  Creator: RailMate");
-  console.log("  Mode: SIMULATION MODE (No Paid API Required)");
+  console.log("  Mode: SIMULATION MODE (SQLite Database Active)");
   console.log(`  Server running at: http://localhost:${PORT}`);
   console.log("=================================================");
 });
